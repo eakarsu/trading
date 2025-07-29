@@ -17,7 +17,7 @@ This document provides a comprehensive overview of all places where OpenRouter A
 
 ### Environment Variables
 ```
-OPENROUTER_API_KEY=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
+OPENROUTER_API_KEY=
 ```
 
 ## AI Service Implementation
