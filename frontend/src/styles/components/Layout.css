@@ -1,0 +1,49 @@
+/* Professional Layout Component */
+.layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--background-secondary);
+}
+
+.main-container {
+  display: flex;
+  flex: 1;
+  max-width: 1280px;
+  margin: 0 auto;
+  width: 100%;
+  box-shadow: var(--shadow-lg);
+  background-color: var(--background);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  margin-top: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.content {
+  flex: 1;
+  padding: var(--space-8);
+  background-color: var(--background-secondary);
+  overflow-y: auto;
+  min-height: calc(100vh - 120px);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .main-container {
+    margin: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  
+  .content {
+    padding: var(--space-4);
+    min-height: calc(100vh - 80px);
+  }
+}
+
+@media (max-width: 640px) {
+  .content {
+    padding: var(--space-3);
+  }
+}

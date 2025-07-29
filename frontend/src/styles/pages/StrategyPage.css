@@ -1,0 +1,348 @@
+.strategy-page {
+  padding: 20px;
+}
+
+.strategy-page h1 {
+  margin-top: 0;
+  color: #2c3e50;
+}
+
+.strategy-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.strategy-title {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.strategy-title h1 {
+  margin: 0;
+}
+
+.strategy-status {
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 20px;
+  background-color: #ddd;
+  color: #555;
+}
+
+.strategy-status.active {
+  background-color: #d1f0dd;
+  color: #27ae60;
+}
+
+.strategy-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.strategy-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 25px;
+  margin-bottom: 30px;
+}
+
+.summary-card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  padding: 25px;
+  text-align: center;
+}
+
+.summary-card h2 {
+  margin-top: 0;
+  color: #2c3e50;
+  font-size: 1.2rem;
+}
+
+.summary-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin: 15px 0;
+}
+
+.summary-value.positive {
+  color: #27ae60;
+}
+
+.summary-value.negative {
+  color: #e74c3c;
+}
+
+.summary-value.risk-low {
+  color: #27ae60;
+}
+
+.summary-value.risk-medium {
+  color: #f39c12;
+}
+
+.summary-value.risk-high {
+  color: #e74c3c;
+}
+
+.summary-description {
+  font-size: 0.9rem;
+  color: #777;
+}
+
+.strategy-content {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.strategy-description,
+.strategy-parameters,
+.performance-metrics,
+.recent-trades {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  padding: 25px;
+}
+
+.strategy-description h2,
+.strategy-parameters h2,
+.performance-metrics h2,
+.recent-trades h2 {
+  margin-top: 0;
+  color: #2c3e50;
+}
+
+.strategy-description p {
+  line-height: 1.6;
+  color: #555;
+}
+
+.parameters-grid,
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.parameter-item,
+.metric-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.parameter-label,
+.metric-label {
+  font-weight: 500;
+  color: #555;
+}
+
+.parameter-value,
+.metric-value {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #2c3e50;
+}
+
+.parameter-value,
+.metric-value.positive {
+  color: #27ae60;
+}
+
+.parameter-value,
+.metric-value.negative {
+  color: #e74c3c;
+}
+
+.trades-table {
+  overflow-x: auto;
+}
+
+.table-header {
+  display: flex;
+  background-color: #3498db;
+  color: white;
+  font-weight: bold;
+}
+
+.header-cell {
+  flex: 1;
+  padding: 15px 10px;
+  text-align: right;
+  min-width: 120px;
+}
+
+.header-cell:first-child {
+  text-align: left;
+}
+
+.table-body {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.table-row {
+  display: flex;
+  border-bottom: 1px solid #eee;
+  transition: background-color 0.2s;
+}
+
+.table-row:hover {
+  background-color: #f8f9fa;
+}
+
+.table-cell {
+  flex: 1;
+  padding: 15px 10px;
+  text-align: right;
+  border-right: 1px solid #eee;
+  min-width: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.table-cell:last-child {
+  border-right: none;
+}
+
+.table-cell.symbol {
+  font-weight: bold;
+  color: #3498db;
+  text-align: left;
+}
+
+.table-cell.entry,
+.table-cell.exit,
+.table-cell.profit,
+.table-cell.return {
+  font-weight: 500;
+}
+
+.table-cell.profit.positive,
+.table-cell.return.positive {
+  color: #27ae60;
+}
+
+.table-cell.profit.negative,
+.table-cell.return.negative {
+  color: #e74c3c;
+}
+
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s;
+  text-align: center;
+}
+
+.btn-primary {
+  background-color: #3498db;
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #2980b9;
+}
+
+.btn-outline {
+  background-color: transparent;
+  border: 1px solid #3498db;
+  color: #3498db;
+}
+
+.btn-outline:hover {
+  background-color: #3498db;
+  color: white;
+}
+
+.btn-danger {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.btn-danger:hover {
+  background-color: #c0392b;
+}
+
+.btn-warning {
+  background-color: #f39c12;
+  color: white;
+}
+
+.btn-warning:hover {
+  background-color: #d35400;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 400px;
+}
+
+.spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  border-top: 4px solid #3498db;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .strategy-header {
+    flex-direction: column;
+    gap: 15px;
+    align-items: flex-start;
+  }
+  
+  .strategy-title {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .strategy-actions {
+    width: 100%;
+  }
+  
+  .strategy-actions .btn {
+    flex: 1;
+  }
+  
+  .strategy-summary {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .table-header,
+  .table-row {
+    min-width: 700px;
+  }
+  
+  .trades-table {
+    overflow-x: scroll;
+  }
+  
+  .header-cell,
+  .table-cell {
+    min-width: 100px;
+  }
+}

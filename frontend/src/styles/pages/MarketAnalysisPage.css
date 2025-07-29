@@ -1,0 +1,300 @@
+.market-analysis-page {
+  padding: 20px;
+}
+
+.market-analysis-page h1 {
+  margin-top: 0;
+  color: #2c3e50;
+}
+
+.analysis-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.analysis-header h1 {
+  margin: 0;
+}
+
+.analysis-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.tabs {
+  display: flex;
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 30px;
+}
+
+.tab {
+  padding: 12px 24px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  color: #777;
+  position: relative;
+}
+
+.tab.active {
+  color: #3498db;
+}
+
+.tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background-color: #3498db;
+}
+
+.tab-content {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  padding: 25px;
+}
+
+.tab-content h2 {
+  margin-top: 0;
+  color: #2c3e50;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+}
+
+.indicators-table,
+.patterns-table,
+.screener-table,
+.news-table,
+.social-table {
+  overflow-x: auto;
+  margin-bottom: 30px;
+}
+
+.table-header {
+  display: flex;
+  background-color: #3498db;
+  color: white;
+  font-weight: bold;
+}
+
+.header-cell {
+  flex: 1;
+  padding: 15px 10px;
+  text-align: right;
+  min-width: 100px;
+}
+
+.header-cell:first-child {
+  text-align: left;
+}
+
+.header-cell:nth-child(2) {
+  text-align: left;
+  flex: 2;
+}
+
+.table-body {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.table-row {
+  display: flex;
+  border-bottom: 1px solid #eee;
+  transition: background-color 0.2s;
+}
+
+.table-row:hover {
+  background-color: #f8f9fa;
+}
+
+.table-cell {
+  flex: 1;
+  padding: 15px 10px;
+  text-align: right;
+  border-right: 1px solid #eee;
+  min-width: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.table-cell:last-child {
+  border-right: none;
+}
+
+.table-cell.symbol {
+  font-weight: bold;
+  color: #3498db;
+  text-align: left;
+}
+
+.table-cell.name {
+  text-align: left;
+  color: #555;
+  flex: 2;
+}
+
+.table-cell.rsi.overbought {
+  color: #e74c3c;
+}
+
+.table-cell.rsi.oversold {
+  color: #27ae60;
+}
+
+.table-cell.macd.bullish,
+.table-cell.trend.bullish {
+  color: #27ae60;
+}
+
+.table-cell.macd.bearish,
+.table-cell.trend.bearish {
+  color: #e74c3c;
+}
+
+.table-cell.signal.buy {
+  color: #27ae60;
+  font-weight: bold;
+}
+
+.table-cell.signal.sell {
+  color: #e74c3c;
+  font-weight: bold;
+}
+
+.table-cell.signal.hold {
+  color: #f39c12;
+}
+
+.table-cell.rating.buy {
+  color: #27ae60;
+  font-weight: bold;
+}
+
+.table-cell.rating.sell {
+  color: #e74c3c;
+  font-weight: bold;
+}
+
+.table-cell.rating.hold {
+  color: #f39c12;
+}
+
+.table-cell.sentiment.bullish {
+  color: #27ae60;
+}
+
+.table-cell.sentiment.bearish {
+  color: #e74c3c;
+}
+
+.table-cell.impact.high {
+  color: #e74c3c;
+  font-weight: bold;
+}
+
+.table-cell.impact.medium {
+  color: #f39c12;
+}
+
+.table-cell.change.positive {
+  color: #27ae60;
+}
+
+.table-cell.change.negative {
+  color: #e74c3c;
+}
+
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s;
+  text-align: center;
+}
+
+.btn-primary {
+  background-color: #3498db;
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #2980b9;
+}
+
+.btn-outline {
+  background-color: transparent;
+  border: 1px solid #3498db;
+  color: #3498db;
+}
+
+.btn-outline:hover {
+  background-color: #3498db;
+  color: white;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 400px;
+}
+
+.spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  border-top: 4px solid #3498db;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .analysis-header {
+    flex-direction: column;
+    gap: 15px;
+    align-items: flex-start;
+  }
+  
+  .analysis-actions {
+    width: 100%;
+  }
+  
+  .analysis-actions .btn {
+    flex: 1;
+  }
+  
+  .table-header,
+  .table-row {
+    min-width: 800px;
+  }
+  
+  .indicators-table,
+  .patterns-table,
+  .screener-table,
+  .news-table,
+  .social-table {
+    overflow-x: scroll;
+  }
+  
+  .header-cell,
+  .table-cell {
+    min-width: 100px;
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "name": "ai-trading-platform",
+  "version": "1.0.0",
+  "description": "AI Trading Platform - A cutting-edge trading website showcasing generative AI capabilities for financial markets",
+  "main": "index.js",
+  "scripts": {
+    "start": "concurrently \"npm run backend\" \"npm run frontend\"",
+    "dev": "concurrently \"npm run backend\" \"npm run frontend\"",
+    "backend": "cd backend && npm run dev",
+    "frontend": "cd frontend && npm start",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "ai",
+    "trading",
+    "finance",
+    "machine-learning",
+    "react",
+    "nodejs",
+    "express"
+  ],
+  "author": "AI Trading Team",
+  "license": "MIT",
+  "dependencies": {
+    "concurrently": "^7.6.0",
+    "recharts": "^3.1.0"
+  }
+}

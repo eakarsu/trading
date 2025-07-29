@@ -1,0 +1,36 @@
+version: "3.8"
+services:
+  postgres:
+    image: postgres:15
+    container_name: ai-trading-postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=ai_trading_platform
+      - POSTGRES_USER=trading_user
+      - POSTGRES_PASSWORD=trading_password
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U trading_user -d ai_trading_platform"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=postgresql://trading_user:trading_password@postgres:5432/ai_trading_platform
+      - NODE_ENV=development
+    ports:
+      - "3000:3000"
+      - "3001:3001"
+      - "5002:5002"
+    volumes:
+      - .:/app
+      - /app/node_modules
