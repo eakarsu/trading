@@ -96,65 +96,12 @@ check_postgres_service() {
 echo "🔍 Checking PostgreSQL..."
 
 # First check if we're running in Docker environment
-if [ -n "$DATABASE_URL" ] && [[ "$DATABASE_URL" == *"postgres:"* ]]; then
-  echo "🐳 Detected Docker environment, waiting for PostgreSQL container..."
-  # Wait for PostgreSQL in the Docker network
-  until check_postgres_service postgres 5432; do
-    echo "Waiting for PostgreSQL at postgres:5432..."
+# Wait for PostgreSQL to be ready
+until nc -z localhost 5432; do
+    echo "Waiting for PostgreSQL at localhost:5432..."
     sleep 2
-  done
-  echo "✅ PostgreSQL container is ready!"
-elif check_postgres_service localhost 5432; then
-  echo "✅ PostgreSQL service is running!"
-  # Now check if our specific database and user are accessible
-  if check_postgres localhost 5432; then
-    echo "✅ Trading database is accessible!"
-  else
-    echo "⚠️  PostgreSQL is running but trading database may need setup..."
-    echo "💡 The database initialization step will handle this."
-  fi
-else
-  echo "⚠️  PostgreSQL service is not running. Attempting to start PostgreSQL..."
-  
-  # Try different methods to start PostgreSQL
-  if command -v brew >/dev/null 2>&1 && brew services list | grep postgresql >/dev/null 2>&1; then
-    echo "🍺 Starting PostgreSQL with Homebrew..."
-    brew services start postgresql@14 2>/dev/null || brew services start postgresql
-    sleep 3
-  elif command -v systemctl >/dev/null 2>&1; then
-    echo "🐧 Starting PostgreSQL with systemctl..."
-    sudo systemctl start postgresql
-    sleep 3
-  elif command -v service >/dev/null 2>&1; then
-    echo "🐧 Starting PostgreSQL with service..."
-    sudo service postgresql start
-    sleep 3
-  else
-    echo "❌ Could not start PostgreSQL automatically."
-    echo "💡 Please start PostgreSQL manually using one of the following commands:"
-    echo "   - On macOS with Homebrew: brew services start postgresql@14"
-    echo "   - On Linux: sudo systemctl start postgresql"
-    echo "   - Or start PostgreSQL using your preferred method"
-    echo ""
-    echo "Make sure PostgreSQL is running on localhost:5432"
-    echo ""
-    echo "After starting PostgreSQL, please run this script again."
-    exit 1
-  fi
-  
-  # Check again after attempting to start
-  if ! check_postgres_service localhost 5432; then
-    echo "❌ Failed to start PostgreSQL."
-    echo "💡 Please ensure PostgreSQL is installed and configured properly."
-    echo "   You can install PostgreSQL using:"
-    echo "   - On macOS: brew install postgresql@14"
-    echo "   - On Ubuntu/Debian: sudo apt install postgresql postgresql-contrib"
-    echo "   - On CentOS/RHEL: sudo yum install postgresql-server postgresql-contrib"
-    echo ""
-    echo "After installation, the database initialization step will create the required database and user."
-    exit 1
-  fi
-fi
+done
+echo "✅ PostgreSQL is running on localhost:5432"
 
 # Install backend dependencies if node_modules doesn't exist
 if [ ! -d "backend/node_modules" ]; then

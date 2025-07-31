@@ -20,7 +20,8 @@ const StockPicksPage = () => {
     
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:3001/api/stock-picks/generate', {
+      const apiBaseUrl = import.meta.env.API_BASE_URL || 'http://localhost:3001';
+      const response = await fetch(`${apiBaseUrl}/api/stock-picks/generate`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

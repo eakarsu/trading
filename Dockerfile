@@ -22,6 +22,7 @@ RUN service postgresql start && \
     sudo -u postgres psql -c "CREATE DATABASE ai_trading_platform;" && \
     sudo -u postgres psql -c "CREATE USER trading_user WITH PASSWORD 'trading_password';" && \
     sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE ai_trading_platform TO trading_user;" && \
+    sudo -u postgres psql -d ai_trading_platform -c "GRANT CREATE,USAGE ON SCHEMA public TO trading_user;" && \
     sudo -u postgres psql -c "ALTER USER trading_user CREATEDB;" && \
     service postgresql stop
 
