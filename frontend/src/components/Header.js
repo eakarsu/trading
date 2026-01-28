@@ -36,12 +36,21 @@ const Header = () => {
   return (
     <header className="header">
       <div className="header-container">
-        <h1 className="logo">AI Trading Platform</h1>
+        <h1 className="logo" onClick={() => navigate('/')}>
+          <span className="logo-icon">📈</span>
+          <span className="logo-text">TradingAI</span>
+        </h1>
         {!isAuthPage && (
           <div className="user-actions">
             {user ? (
               <>
-                <span className="user-welcome">Welcome, {user.username}</span>
+                <div className="user-welcome">
+                  <span className="user-avatar">
+                    {user.username ? user.username.charAt(0).toUpperCase() : 'U'}
+                  </span>
+                  <span className="user-name">{user.username}</span>
+                </div>
+                <span className="header-divider"></span>
                 <button className="btn btn-secondary" onClick={() => navigate('/profile')}>
                   Profile
                 </button>
@@ -51,11 +60,11 @@ const Header = () => {
               </>
             ) : (
               <>
-                <button className="btn btn-primary" onClick={() => navigate('/login')}>
-                  Login
+                <button className="btn btn-secondary" onClick={() => navigate('/login')}>
+                  Sign In
                 </button>
-                <button className="btn btn-secondary" onClick={() => navigate('/register')}>
-                  Register
+                <button className="btn btn-primary" onClick={() => navigate('/register')}>
+                  Get Started
                 </button>
               </>
             )}

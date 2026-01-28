@@ -7,7 +7,6 @@ const Navigation = () => {
   const location = useLocation();
 
   useEffect(() => {
-    // Check if user is authenticated
     const token = localStorage.getItem('token');
     const userData = localStorage.getItem('user');
     setIsAuthenticated(!!(token && userData));
@@ -22,91 +21,119 @@ const Navigation = () => {
 
   return (
     <aside className="sidebar">
+      {/* Dashboard */}
       <nav className="nav-section">
         <h3 className="nav-section-title">Overview</h3>
         <ul className="nav-menu">
           <li className="nav-item">
-            <Link 
-              to="/dashboard" 
+            <Link
+              to="/dashboard"
               className={`nav-link ${location.pathname === '/dashboard' ? 'active' : ''}`}
             >
               <span className="nav-icon">📊</span>
               <span className="nav-text">Dashboard</span>
             </Link>
           </li>
-          <li className="nav-item">
-            <Link 
-              to="/portfolio" 
-              className={`nav-link ${location.pathname === '/portfolio' ? 'active' : ''}`}
-            >
-              <span className="nav-icon">💼</span>
-              <span className="nav-text">Portfolio</span>
-            </Link>
-          </li>
         </ul>
       </nav>
 
+      {/* Broker Connection */}
       <nav className="nav-section">
-        <h3 className="nav-section-title">Analysis</h3>
+        <h3 className="nav-section-title">Trading</h3>
         <ul className="nav-menu">
           <li className="nav-item">
-            <Link 
-              to="/market-analysis" 
-              className={`nav-link ${location.pathname === '/market-analysis' ? 'active' : ''}`}
+            <Link
+              to="/command-center"
+              className={`nav-link ${location.pathname === '/command-center' ? 'active' : ''}`}
+            >
+              <span className="nav-icon">🔗</span>
+              <span className="nav-text">Command Center</span>
+            </Link>
+          </li>
+          <li className="nav-item">
+            <Link
+              to="/trade-history"
+              className={`nav-link ${location.pathname === '/trade-history' ? 'active' : ''}`}
+            >
+              <span className="nav-icon">📜</span>
+              <span className="nav-text">Trade History</span>
+            </Link>
+          </li>
+          <li className="nav-item">
+            <Link
+              to="/alerts"
+              className={`nav-link ${location.pathname === '/alerts' ? 'active' : ''}`}
+            >
+              <span className="nav-icon">🔔</span>
+              <span className="nav-text">Price Alerts</span>
+            </Link>
+          </li>
+          <li className="nav-item">
+            <Link
+              to="/analytics"
+              className={`nav-link ${location.pathname === '/analytics' ? 'active' : ''}`}
             >
               <span className="nav-icon">📈</span>
-              <span className="nav-text">Market Analysis</span>
+              <span className="nav-text">Analytics</span>
             </Link>
           </li>
           <li className="nav-item">
-            <Link 
-              to="/market-data" 
-              className={`nav-link ${location.pathname === '/market-data' ? 'active' : ''}`}
+            <Link
+              to="/charts"
+              className={`nav-link ${location.pathname === '/charts' ? 'active' : ''}`}
             >
-              <span className="nav-icon">📋</span>
-              <span className="nav-text">Market Data</span>
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link 
-              to="/predictions" 
-              className={`nav-link ${location.pathname === '/predictions' ? 'active' : ''}`}
-            >
-              <span className="nav-icon">🔮</span>
-              <span className="nav-text">Predictions</span>
+              <span className="nav-icon">📉</span>
+              <span className="nav-text">Charts</span>
             </Link>
           </li>
         </ul>
       </nav>
 
+      {/* Strategy Development */}
       <nav className="nav-section">
-        <h3 className="nav-section-title">AI Tools</h3>
+        <h3 className="nav-section-title">Strategy</h3>
         <ul className="nav-menu">
           <li className="nav-item">
-            <Link 
-              to="/strategies" 
-              className={`nav-link ${location.pathname === '/strategies' ? 'active' : ''}`}
+            <Link
+              to="/strategy-builder"
+              className={`nav-link ${location.pathname === '/strategy-builder' ? 'active' : ''}`}
+            >
+              <span className="nav-icon">🛠️</span>
+              <span className="nav-text">Strategy Builder</span>
+            </Link>
+          </li>
+          <li className="nav-item">
+            <Link
+              to="/backtesting"
+              className={`nav-link ${location.pathname === '/backtesting' ? 'active' : ''}`}
+            >
+              <span className="nav-icon">📊</span>
+              <span className="nav-text">Backtesting</span>
+            </Link>
+          </li>
+        </ul>
+      </nav>
+
+      {/* Automated Trading */}
+      <nav className="nav-section">
+        <h3 className="nav-section-title">Auto Trading</h3>
+        <ul className="nav-menu">
+          <li className="nav-item">
+            <Link
+              to="/auto-trading"
+              className={`nav-link ${location.pathname === '/auto-trading' ? 'active' : ''}`}
             >
               <span className="nav-icon">🤖</span>
-              <span className="nav-text">AI Strategies</span>
+              <span className="nav-text">Auto Trading</span>
             </Link>
           </li>
           <li className="nav-item">
-            <Link 
-              to="/assistant" 
-              className={`nav-link ${location.pathname === '/assistant' ? 'active' : ''}`}
+            <Link
+              to="/strategy-optimizer"
+              className={`nav-link ${location.pathname === '/strategy-optimizer' ? 'active' : ''}`}
             >
-              <span className="nav-icon">💬</span>
-              <span className="nav-text">Trading Assistant</span>
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link 
-              to="/stock-picks" 
-              className={`nav-link ${location.pathname === '/stock-picks' ? 'active' : ''}`}
-            >
-              <span className="nav-icon">🎯</span>
-              <span className="nav-text">AI Stock Picks</span>
+              <span className="nav-icon">⚡</span>
+              <span className="nav-text">Strategy Optimizer</span>
             </Link>
           </li>
         </ul>

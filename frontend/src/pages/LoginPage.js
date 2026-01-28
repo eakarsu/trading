@@ -28,15 +28,20 @@ const LoginPage = () => {
   return (
     <div className="auth-page">
       <div className="auth-container">
-        <h1>Login to Your Account</h1>
+        <div className="auth-logo">
+          <span className="auth-logo-icon">📈</span>
+        </div>
+        <h1>Welcome Back</h1>
+        <p className="auth-subtitle">Sign in to your TradingAI account</p>
         {error && <div className="alert alert-error">{error}</div>}
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-group">
-            <label htmlFor="email">Email</label>
+            <label htmlFor="email">Email Address</label>
             <input
               type="email"
               id="email"
               className="form-control"
+              placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -48,17 +53,18 @@ const LoginPage = () => {
               type="password"
               id="password"
               className="form-control"
+              placeholder="Enter your password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
             />
           </div>
           <button type="submit" className="btn btn-block" disabled={loading}>
-            {loading ? 'Logging in...' : 'Login'}
+            {loading ? 'Signing in...' : 'Sign In'}
           </button>
         </form>
         <div className="auth-footer">
-          <p>Don't have an account? <Link to="/register">Register here</Link></p>
+          <p>Don't have an account? <Link to="/register">Create one</Link></p>
         </div>
       </div>
     </div>

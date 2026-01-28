@@ -89,6 +89,9 @@ app.use('/api/predictions', require('./src/routes/predictionRoutes'));
 app.use('/api/analysis', require('./src/routes/marketAnalysisRoutes'));
 app.use('/api/users', require('./src/routes/userRoutes'));
 app.use('/api/stock-picks', require('./src/routes/stockPicksRoutes'));
+app.use('/api/alpaca', require('./src/routes/alpacaRoutes'));
+app.use('/api/algo', require('./src/routes/algoTradingRoutes'));
+app.use('/api/brokers', require('./src/routes/brokerRoutes'));
 
 // 404 handler
 app.use('*', (req, res) => {

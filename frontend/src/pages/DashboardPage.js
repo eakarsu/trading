@@ -1,339 +1,430 @@
-import React, { useState, useEffect } from 'react';
-import { marketDataAPI, portfolioAPI } from '../api/marketData';
-import DashboardPerformanceChart from '../components/DashboardPerformanceChart';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { brokersAPI } from '../api/brokers';
+import { algoTradingAPI } from '../api/algoTrading';
 import '../styles/pages/DashboardPage.css';
 
 const DashboardPage = () => {
-  const [marketData, setMarketData] = useState(null);
-  const [portfolioData, setPortfolioData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [watchlist, setWatchlist] = useState([]);
-  const [newWatchlistItem, setNewWatchlistItem] = useState({ symbol: '', name: '' });
-  const [editingWatchlistId, setEditingWatchlistId] = useState(null);
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(true);
+  const [isBrokerConnected, setIsBrokerConnected] = useState(false);
+  const [activeBroker, setActiveBroker] = useState(null);
 
-  // Fetch dashboard data
-  const fetchDashboardData = async () => {
+  // Data state
+  const [account, setAccount] = useState(null);
+  const [positions, setPositions] = useState([]);
+  const [recentOrders, setRecentOrders] = useState([]);
+  const [activeStrategies, setActiveStrategies] = useState([]);
+
+  // Watchlist state
+  const [watchlist, setWatchlist] = useState(() => {
+    const saved = localStorage.getItem('watchlist');
+    return saved ? JSON.parse(saved) : [
+      { symbol: 'AAPL', name: 'Apple Inc.' },
+      { symbol: 'TSLA', name: 'Tesla Inc.' },
+      { symbol: 'NVDA', name: 'NVIDIA Corp.' },
+    ];
+  });
+  const [newSymbol, setNewSymbol] = useState('');
+  const [watchlistPrices, setWatchlistPrices] = useState({});
+
+  // Check broker status
+  const checkBrokerStatus = useCallback(async () => {
     try {
-      setLoading(true);
-      
-      // Fetch real market data
-      const marketResponse = await marketDataAPI.getRealTimeData();
-      
-      // Set market data
-      if (marketResponse && marketResponse.data) {
-        setMarketData(marketResponse.data);
+      const response = await brokersAPI.getStatus();
+      if (response?.success && response?.data?.totalConnected > 0) {
+        setIsBrokerConnected(true);
+        setActiveBroker(response.data.activeBroker);
+        return true;
       }
-      
-      // Fetch portfolio data
-      try {
-        const portfolioResponse = await portfolioAPI.getPortfolio();
-        if (portfolioResponse) {
-          setPortfolioData(portfolioResponse);
-        }
-      } catch (portfolioError) {
-        console.error('Failed to fetch portfolio data', portfolioError);
-        // Don't show alert for portfolio data failure, just leave it null
-        setPortfolioData(null);
-      }
+      setIsBrokerConnected(false);
+      return false;
     } catch (err) {
-      console.error('Failed to fetch dashboard data', err);
-      // Show error to user
-      alert('Failed to load dashboard data. Please try again later.');
-    } finally {
-      setLoading(false);
+      setIsBrokerConnected(false);
+      return false;
     }
+  }, []);
+
+  // Fetch all dashboard data
+  const fetchDashboardData = useCallback(async () => {
+    if (!isBrokerConnected) return;
+
+    setIsLoading(true);
+    try {
+      const [accountRes, positionsRes, ordersRes, strategiesRes] = await Promise.all([
+        brokersAPI.getAccount(),
+        brokersAPI.getPositions(),
+        brokersAPI.getOrders('all'),
+        algoTradingAPI.getActiveStrategies(),
+      ]);
+
+      if (accountRes.success) setAccount(accountRes.data);
+      if (positionsRes.success) setPositions(positionsRes.data || []);
+      if (ordersRes.success) setRecentOrders((ordersRes.data || []).slice(0, 10));
+      if (strategiesRes.data?.success) setActiveStrategies(strategiesRes.data.data || []);
+
+      // Fetch watchlist prices
+      fetchWatchlistPrices();
+    } catch (err) {
+      console.error('Error fetching dashboard data:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [isBrokerConnected]);
+
+  // Fetch watchlist prices
+  const fetchWatchlistPrices = async () => {
+    const prices = {};
+    for (const item of watchlist) {
+      try {
+        const response = await brokersAPI.getQuote(item.symbol);
+        if (response.success) {
+          prices[item.symbol] = response.data;
+        }
+      } catch (err) {
+        console.error(`Failed to get quote for ${item.symbol}:`, err);
+      }
+    }
+    setWatchlistPrices(prices);
   };
 
   useEffect(() => {
-    fetchDashboardData();
-  }, []);
+    const init = async () => {
+      const connected = await checkBrokerStatus();
+      if (connected) {
+        await fetchDashboardData();
+      } else {
+        setIsLoading(false);
+      }
+    };
+    init();
+  }, [checkBrokerStatus, fetchDashboardData]);
 
-  const handleAddToWatchlist = async () => {
-    if (!newWatchlistItem.symbol || !newWatchlistItem.name) {
-      alert('Please enter both symbol and name');
-      return;
-    }
-    
-    try {
-      const newItem = {
-        id: watchlist.length + 1,
-        symbol: newWatchlistItem.symbol.toUpperCase(),
-        name: newWatchlistItem.name,
-        price: 0,
-        change: 0,
-        changePercent: 0
-      };
-      
-      setWatchlist(prev => [...prev, newItem]);
-      setNewWatchlistItem({ symbol: '', name: '' });
-      
-      alert('Item added to watchlist successfully!');
-    } catch (error) {
-      console.error('Failed to add to watchlist:', error);
-      alert('Failed to add to watchlist. Please try again.');
+  // Save watchlist to localStorage
+  useEffect(() => {
+    localStorage.setItem('watchlist', JSON.stringify(watchlist));
+  }, [watchlist]);
+
+  // Add to watchlist
+  const handleAddToWatchlist = () => {
+    if (!newSymbol.trim()) return;
+    const symbol = newSymbol.toUpperCase().trim();
+    if (!watchlist.find(w => w.symbol === symbol)) {
+      setWatchlist([...watchlist, { symbol, name: symbol }]);
+      setNewSymbol('');
     }
   };
 
-  const handleRemoveFromWatchlist = async (id) => {
-    try {
-      setWatchlist(prev => prev.filter(item => item.id !== id));
-      alert('Item removed from watchlist successfully!');
-    } catch (error) {
-      console.error('Failed to remove from watchlist:', error);
-      alert('Failed to remove from watchlist. Please try again.');
-    }
+  // Remove from watchlist
+  const handleRemoveFromWatchlist = (symbol) => {
+    setWatchlist(watchlist.filter(w => w.symbol !== symbol));
   };
 
-  const handleEditWatchlistItem = (item) => {
-    setEditingWatchlistId(item.id);
-    setNewWatchlistItem({ symbol: item.symbol, name: item.name });
-  };
-
-  const handleUpdateWatchlistItem = () => {
-    if (!newWatchlistItem.symbol || !newWatchlistItem.name) {
-      alert('Please enter both symbol and name');
-      return;
-    }
-    
-    try {
-      setWatchlist(prev => prev.map(item => 
-        item.id === editingWatchlistId 
-          ? { ...item, symbol: newWatchlistItem.symbol.toUpperCase(), name: newWatchlistItem.name } 
-          : item
-      ));
-      
-      setEditingWatchlistId(null);
-      setNewWatchlistItem({ symbol: '', name: '' });
-      alert('Watchlist item updated successfully!');
-    } catch (error) {
-      console.error('Failed to update watchlist item:', error);
-      alert('Failed to update watchlist item. Please try again.');
-    }
-  };
-
+  // Format currency
   const formatCurrency = (value) => {
+    if (value === null || value === undefined) return '$0.00';
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
-      minimumFractionDigits: 2
+      minimumFractionDigits: 2,
     }).format(value);
   };
 
+  // Format percent
   const formatPercent = (value) => {
-    if (value === undefined || value === null || isNaN(value)) {
-      return '0.00%';
-    }
-    const numValue = Number(value);
-    if (isNaN(numValue)) {
-      return '0.00%';
-    }
-    return `${numValue >= 0 ? '+' : ''}${numValue.toFixed(2)}%`;
+    if (value === null || value === undefined) return '0.00%';
+    const sign = value >= 0 ? '+' : '';
+    return `${sign}${value.toFixed(2)}%`;
   };
 
-  if (loading) {
+  // If not connected, show connect prompt
+  if (!isBrokerConnected && !isLoading) {
     return (
       <div className="dashboard-page">
-        <div className="loading">
-          <div className="spinner"></div>
+        <div className="connect-prompt">
+          <div className="prompt-icon">🔗</div>
+          <h2>Connect to a Broker</h2>
+          <p>Connect to your broker to view your dashboard and start trading.</p>
+          <button className="btn btn-primary btn-lg" onClick={() => navigate('/command-center')}>
+            Go to Command Center
+          </button>
         </div>
       </div>
     );
   }
 
-  if (!marketData) {
+  if (isLoading) {
     return (
       <div className="dashboard-page">
-        <div className="container">
-          <h1>Dashboard</h1>
-          <p>Error loading dashboard data.</p>
+        <div className="loading-container">
+          <div className="spinner"></div>
+          <p>Loading dashboard...</p>
         </div>
       </div>
     );
   }
+
+  const totalPnL = positions.reduce((sum, pos) => sum + (pos.unrealizedPL || 0), 0);
 
   return (
     <div className="dashboard-page">
-      <div className="container">
-        <div className="dashboard-header">
+      <div className="dashboard-header">
+        <div className="header-left">
           <h1>Dashboard</h1>
-          <div className="dashboard-actions">
-            <button className="btn btn-primary" onClick={async () => {
-              try {
-                setLoading(true);
-                const refreshedData = await marketDataAPI.getRealTimeData();
-                if (refreshedData && refreshedData.data) {
-                  setMarketData(refreshedData.data);
-                  alert('Dashboard data refreshed successfully!');
-                } else {
-                  throw new Error('No data received');
-                }
-              } catch (error) {
-                console.error('Failed to refresh dashboard data:', error);
-                alert('Failed to refresh dashboard data. Please try again.');
-              } finally {
-                setLoading(false);
-              }
-            }}>
-              Refresh Data
-            </button>
+          <span className="broker-badge">{activeBroker?.toUpperCase()} Connected</span>
+        </div>
+        <div className="header-actions">
+          <button className="btn btn-secondary" onClick={fetchDashboardData}>
+            Refresh
+          </button>
+          <button className="btn btn-primary" onClick={() => navigate('/command-center')}>
+            Trade
+          </button>
+        </div>
+      </div>
+
+      {/* Portfolio Summary Cards */}
+      <div className="summary-grid">
+        <div className="summary-card primary">
+          <div className="card-icon">💰</div>
+          <div className="card-content">
+            <span className="card-label">Portfolio Value</span>
+            <span className="card-value">{formatCurrency(account?.portfolioValue || account?.equity)}</span>
+            <span className={`card-change ${(account?.dayChange || 0) >= 0 ? 'positive' : 'negative'}`}>
+              {formatCurrency(account?.dayChange || 0)} ({formatPercent(account?.dayChangePercent || 0)}) today
+            </span>
           </div>
         </div>
-        
-        <div className="dashboard-grid">
-          <div className="dashboard-card portfolio-summary">
-            <h2>Portfolio Summary</h2>
-            {portfolioData ? (
-              <>
-                <div className="portfolio-value">
-                  <div className="value-amount">{formatCurrency(portfolioData.totalValue)}</div>
-                  <div className={`value-change ${portfolioData.totalReturn >= 0 ? 'positive' : 'negative'}`}>
-                    {formatCurrency(portfolioData.totalReturn)} ({formatPercent(portfolioData.totalReturnPercent)})
-                  </div>
-                </div>
-                
-                <div className="allocation-chart">
-                  {portfolioData.allocation && typeof portfolioData.allocation === 'object' ? 
-                    Object.entries(portfolioData.allocation).map(([asset, percent], idx) => (
-                      <div className="allocation-item" key={idx}>
-                        <div className="allocation-label">
-                          <div 
-                            className="allocation-color" 
-                            style={{ backgroundColor: `hsl(${idx * 60}, 70%, 50%)` }}
-                          ></div>
-                          <span>{asset.charAt(0).toUpperCase() + asset.slice(1)}</span>
-                        </div>
-                        <div className="allocation-value">{percent}%</div>
-                        <div className="allocation-percent">
-                          {formatCurrency((portfolioData.totalValue * percent) / 100)}
-                        </div>
-                      </div>
-                    )) : (
-                      <div className="allocation-placeholder">
-                        <p>No allocation data available</p>
-                      </div>
-                    )
-                  }
-                </div>
-              </>
+
+        <div className="summary-card">
+          <div className="card-icon">💵</div>
+          <div className="card-content">
+            <span className="card-label">Buying Power</span>
+            <span className="card-value">{formatCurrency(account?.buyingPower)}</span>
+          </div>
+        </div>
+
+        <div className="summary-card">
+          <div className="card-icon">🏦</div>
+          <div className="card-content">
+            <span className="card-label">Cash</span>
+            <span className="card-value">{formatCurrency(account?.cash)}</span>
+          </div>
+        </div>
+
+        <div className="summary-card">
+          <div className="card-icon">📈</div>
+          <div className="card-content">
+            <span className="card-label">Unrealized P&L</span>
+            <span className={`card-value ${totalPnL >= 0 ? 'positive' : 'negative'}`}>
+              {formatCurrency(totalPnL)}
+            </span>
+          </div>
+        </div>
+
+        <div className="summary-card">
+          <div className="card-icon">🤖</div>
+          <div className="card-content">
+            <span className="card-label">Active Strategies</span>
+            <span className="card-value">{activeStrategies.length}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Dashboard Grid */}
+      <div className="dashboard-grid">
+        {/* Positions */}
+        <div className="dashboard-card positions-card">
+          <div className="card-header">
+            <h2>Positions ({positions.length})</h2>
+            <button className="btn btn-sm btn-link" onClick={() => navigate('/command-center')}>
+              View All
+            </button>
+          </div>
+          <div className="card-body">
+            {positions.length === 0 ? (
+              <div className="empty-state">
+                <p>No open positions</p>
+                <button className="btn btn-primary btn-sm" onClick={() => navigate('/command-center')}>
+                  Place Trade
+                </button>
+              </div>
             ) : (
-              <div className="portfolio-placeholder">
-                <p>No portfolio data available. <a href="/portfolio">Create a portfolio</a> to get started.</p>
+              <div className="positions-list">
+                {positions.slice(0, 5).map((pos) => (
+                  <div key={pos.symbol} className="position-item">
+                    <div className="position-info">
+                      <span className="symbol">{pos.symbol}</span>
+                      <span className="qty">{pos.qty} shares @ {formatCurrency(pos.avgEntryPrice)}</span>
+                    </div>
+                    <div className="position-value">
+                      <span className="market-value">{formatCurrency(pos.marketValue)}</span>
+                      <span className={`pnl ${pos.unrealizedPL >= 0 ? 'positive' : 'negative'}`}>
+                        {formatCurrency(pos.unrealizedPL)} ({formatPercent(pos.unrealizedPLPercent)})
+                      </span>
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
           </div>
-          
-          <div className="dashboard-card market-overview">
-            <h2>Market Overview</h2>
-            <div className="indices-grid">
-              {marketData.indices && Array.isArray(marketData.indices) ? 
-                marketData.indices.map((index, idx) => (
-                  <div className="index-item" key={idx}>
-                    <div className="index-symbol">{index.symbol}</div>
-                    <div className="index-name">{index.name}</div>
-                    <div className="index-price">{formatCurrency(index.price || 0)}</div>
-                    <div className={`index-change ${(index.change || 0) >= 0 ? 'positive' : 'negative'}`}>
-                      {formatCurrency(index.change || 0)} ({formatPercent(index.changePercent)}%)
-                    </div>
-                  </div>
-                )) : (
-                  <div className="market-placeholder">
-                    <p>Loading market data...</p>
-                  </div>
-                )
-              }
-            </div>
+        </div>
+
+        {/* Active Strategies */}
+        <div className="dashboard-card strategies-card">
+          <div className="card-header">
+            <h2>Active Strategies</h2>
+            <button className="btn btn-sm btn-link" onClick={() => navigate('/auto-trading')}>
+              Manage
+            </button>
           </div>
-          
-          <div className="dashboard-card watchlist">
-            <h2>My Watchlist</h2>
-            <div className="watchlist-controls">
-              <div className="watchlist-form">
-                <input
-                  type="text"
-                  placeholder="Symbol (e.g. AAPL)"
-                  value={newWatchlistItem.symbol}
-                  onChange={(e) => setNewWatchlistItem({...newWatchlistItem, symbol: e.target.value})}
-                />
-                <input
-                  type="text"
-                  placeholder="Company Name"
-                  value={newWatchlistItem.name}
-                  onChange={(e) => setNewWatchlistItem({...newWatchlistItem, name: e.target.value})}
-                />
-                {editingWatchlistId ? (
-                  <button className="btn btn-primary" onClick={handleUpdateWatchlistItem}>
-                    Update
-                  </button>
-                ) : (
-                  <button className="btn btn-primary" onClick={handleAddToWatchlist}>
-                    Add
-                  </button>
-                )}
-                {editingWatchlistId && (
-                  <button className="btn btn-outline" onClick={() => {
-                    setEditingWatchlistId(null);
-                    setNewWatchlistItem({ symbol: '', name: '' });
-                  }}>
-                    Cancel
-                  </button>
-                )}
+          <div className="card-body">
+            {activeStrategies.length === 0 ? (
+              <div className="empty-state">
+                <p>No active strategies</p>
+                <button className="btn btn-primary btn-sm" onClick={() => navigate('/auto-trading')}>
+                  Start Auto Trading
+                </button>
               </div>
-            </div>
-            <div className="watchlist-grid">
-              {watchlist.map((item, idx) => (
-                <div className="watchlist-item" key={idx}>
-                  <div className="watchlist-symbol">{item.symbol}</div>
-                  <div className="watchlist-name">{item.name}</div>
-                  <div className="watchlist-price">{formatCurrency(item.price)}</div>
-                  <div className={`watchlist-change ${item.change >= 0 ? 'positive' : 'negative'}`}>
-                    {formatCurrency(item.change)} ({formatPercent(item.changePercent)}%)
-                  </div>
-                  <div className="watchlist-actions">
-                    <button className="btn btn-outline btn-small" onClick={() => handleEditWatchlistItem(item)}>
-                      Edit
-                    </button>
-                    <button className="btn btn-danger btn-small" onClick={() => handleRemoveFromWatchlist(item.id)}>
-                      Remove
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-          
-          <div className="dashboard-card recommendations">
-            <h2>AI Recommendations</h2>
-            <div className="recommendations-list">
-              {[
-                { symbol: 'NVDA', name: 'NVIDIA Corp', reason: 'Strong momentum in AI sector', action: 'Buy' },
-                { symbol: 'META', name: 'Meta Platforms Inc', reason: 'Undervalued with strong fundamentals', action: 'Buy' },
-                { symbol: 'BAC', name: 'Bank of America', reason: 'Overvalued in current market', action: 'Sell' },
-                { symbol: 'JPM', name: 'JPMorgan Chase', reason: 'Technical resistance level approaching', action: 'Hold' }
-              ].map((rec, idx) => (
-                <div className="recommendation-item" key={idx}>
-                  <div className="recommendation-header">
-                    <div className="recommendation-symbol">{rec.symbol}</div>
-                    <div className={`recommendation-action ${rec.action.toLowerCase()}`}>
-                      {rec.action}
+            ) : (
+              <div className="strategies-list">
+                {activeStrategies.slice(0, 5).map((strategy) => (
+                  <div key={strategy.id} className="strategy-item">
+                    <div className="strategy-info">
+                      <span className="strategy-name">{strategy.type}</span>
+                      <span className="strategy-symbol">{strategy.symbol}</span>
+                    </div>
+                    <div className="strategy-status">
+                      <span className={`status ${strategy.status?.toLowerCase()}`}>
+                        {strategy.status}
+                      </span>
                     </div>
                   </div>
-                  <div className="recommendation-name">{rec.name}</div>
-                  <div className="recommendation-reason">{rec.reason}</div>
-                </div>
-              ))}
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Watchlist */}
+        <div className="dashboard-card watchlist-card">
+          <div className="card-header">
+            <h2>Watchlist</h2>
+          </div>
+          <div className="card-body">
+            <div className="watchlist-add">
+              <input
+                type="text"
+                placeholder="Add symbol..."
+                value={newSymbol}
+                onChange={(e) => setNewSymbol(e.target.value.toUpperCase())}
+                onKeyPress={(e) => e.key === 'Enter' && handleAddToWatchlist()}
+              />
+              <button className="btn btn-sm btn-primary" onClick={handleAddToWatchlist}>
+                Add
+              </button>
+            </div>
+            <div className="watchlist-items">
+              {watchlist.map((item) => {
+                const quote = watchlistPrices[item.symbol];
+                return (
+                  <div key={item.symbol} className="watchlist-item">
+                    <div className="watchlist-info">
+                      <span className="symbol">{item.symbol}</span>
+                      <span className="name">{item.name}</span>
+                    </div>
+                    <div className="watchlist-price">
+                      {quote ? (
+                        <>
+                          <span className="price">{formatCurrency(quote.price || quote.last)}</span>
+                          <span className={`change ${(quote.changePercent || 0) >= 0 ? 'positive' : 'negative'}`}>
+                            {formatPercent(quote.changePercent || 0)}
+                          </span>
+                        </>
+                      ) : (
+                        <span className="loading">...</span>
+                      )}
+                    </div>
+                    <button
+                      className="btn btn-sm btn-danger"
+                      onClick={() => handleRemoveFromWatchlist(item.symbol)}
+                    >
+                      X
+                    </button>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
-        
-        <div className="performance-chart">
-          <h2>Portfolio Performance</h2>
-          {portfolioData ? (
-            <DashboardPerformanceChart performanceData={portfolioData.performance} />
-          ) : (
-            <div className="chart-placeholder">
-              Portfolio Performance Chart
+
+        {/* Recent Orders */}
+        <div className="dashboard-card orders-card">
+          <div className="card-header">
+            <h2>Recent Orders</h2>
+            <button className="btn btn-sm btn-link" onClick={() => navigate('/trade-history')}>
+              View History
+            </button>
+          </div>
+          <div className="card-body">
+            {recentOrders.length === 0 ? (
+              <div className="empty-state">
+                <p>No recent orders</p>
+              </div>
+            ) : (
+              <div className="orders-list">
+                {recentOrders.slice(0, 5).map((order) => (
+                  <div key={order.id} className="order-item">
+                    <div className="order-info">
+                      <span className={`side ${order.side}`}>{order.side?.toUpperCase()}</span>
+                      <span className="symbol">{order.symbol}</span>
+                      <span className="qty">{order.qty}</span>
+                    </div>
+                    <div className="order-status">
+                      <span className={`status ${order.status?.toLowerCase()}`}>
+                        {order.status}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="dashboard-card actions-card">
+          <div className="card-header">
+            <h2>Quick Actions</h2>
+          </div>
+          <div className="card-body">
+            <div className="quick-actions">
+              <button className="action-btn" onClick={() => navigate('/command-center')}>
+                <span className="action-icon">💹</span>
+                <span className="action-label">Place Trade</span>
+              </button>
+              <button className="action-btn" onClick={() => navigate('/strategy-builder')}>
+                <span className="action-icon">🛠️</span>
+                <span className="action-label">Build Strategy</span>
+              </button>
+              <button className="action-btn" onClick={() => navigate('/backtesting')}>
+                <span className="action-icon">📊</span>
+                <span className="action-label">Backtest</span>
+              </button>
+              <button className="action-btn" onClick={() => navigate('/auto-trading')}>
+                <span className="action-icon">🤖</span>
+                <span className="action-label">Auto Trade</span>
+              </button>
+              <button className="action-btn" onClick={() => navigate('/strategy-optimizer')}>
+                <span className="action-icon">⚡</span>
+                <span className="action-label">Optimizer</span>
+              </button>
+              <button className="action-btn" onClick={() => navigate('/trade-history')}>
+                <span className="action-icon">📜</span>
+                <span className="action-label">History</span>
+              </button>
             </div>
-          )}
+          </div>
         </div>
       </div>
     </div>

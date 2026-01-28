@@ -37,7 +37,11 @@ const RegisterPage = () => {
   return (
     <div className="auth-page">
       <div className="auth-container">
-        <h1>Create an Account</h1>
+        <div className="auth-logo">
+          <span className="auth-logo-icon">📈</span>
+        </div>
+        <h1>Get Started</h1>
+        <p className="auth-subtitle">Create your TradingAI account</p>
         {error && <div className="alert alert-error">{error}</div>}
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-group">
@@ -46,17 +50,19 @@ const RegisterPage = () => {
               type="text"
               id="username"
               className="form-control"
+              placeholder="Choose a username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
             />
           </div>
           <div className="form-group">
-            <label htmlFor="email">Email</label>
+            <label htmlFor="email">Email Address</label>
             <input
               type="email"
               id="email"
               className="form-control"
+              placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -68,6 +74,7 @@ const RegisterPage = () => {
               type="password"
               id="password"
               className="form-control"
+              placeholder="Create a strong password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
@@ -79,17 +86,21 @@ const RegisterPage = () => {
               type="password"
               id="confirmPassword"
               className="form-control"
+              placeholder="Confirm your password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
             />
           </div>
           <button type="submit" className="btn btn-block" disabled={loading}>
-            {loading ? 'Registering...' : 'Register'}
+            {loading ? 'Creating Account...' : 'Create Account'}
           </button>
         </form>
+        <p className="auth-terms">
+          By creating an account, you agree to our Terms of Service and Privacy Policy
+        </p>
         <div className="auth-footer">
-          <p>Already have an account? <Link to="/login">Login here</Link></p>
+          <p>Already have an account? <Link to="/login">Sign in</Link></p>
         </div>
       </div>
     </div>

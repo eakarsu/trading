@@ -2,108 +2,121 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
+
+// Pages
 import LandingPage from './pages/LandingPage';
-import DashboardPage from './pages/DashboardPage';
-import MarketAnalysisPage from './pages/MarketAnalysisPage';
-import AIStrategiesPage from './pages/AIStrategiesPage';
-import TradingAssistantPage from './pages/TradingAssistantPage';
-import PredictionsPage from './pages/PredictionsPage';
-import PortfolioPage from './pages/PortfolioPage';
-import MarketDataPage from './pages/MarketDataPage';
-import StrategyPage from './pages/StrategyPage';
-import StockPicksPage from './pages/StockPicksPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
-import ProfilePage from './pages/ProfilePage';
+import DashboardPage from './pages/DashboardPage';
+import CommandCenterPage from './pages/CommandCenterPage';
+import StrategyBuilderPage from './pages/StrategyBuilderPage';
+import BacktestingPage from './pages/BacktestingPage';
+import AutoTradingPage from './pages/AutoTradingPage';
+import StrategyOptimizerPage from './pages/StrategyOptimizerPage';
+import TradeHistoryPage from './pages/TradeHistoryPage';
+import AlertsPage from './pages/AlertsPage';
+import AnalyticsPage from './pages/AnalyticsPage';
+import ChartsPage from './pages/ChartsPage';
 
 function App() {
   return (
     <Router>
       <Layout>
         <Routes>
+          {/* Public Routes */}
           <Route path="/" element={<LandingPage />} />
-          <Route 
-            path="/dashboard" 
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+
+          {/* Protected Routes - Dashboard */}
+          <Route
+            path="/dashboard"
             element={
               <ProtectedRoute>
                 <DashboardPage />
               </ProtectedRoute>
-            } 
+            }
           />
-          <Route 
-            path="/market-analysis" 
+
+          {/* Protected Routes - Broker Management */}
+          <Route
+            path="/command-center"
             element={
               <ProtectedRoute>
-                <MarketAnalysisPage />
+                <CommandCenterPage />
               </ProtectedRoute>
-            } 
+            }
           />
-          <Route 
-            path="/market-data" 
+
+          {/* Protected Routes - Strategy */}
+          <Route
+            path="/strategy-builder"
             element={
               <ProtectedRoute>
-                <MarketDataPage />
+                <StrategyBuilderPage />
               </ProtectedRoute>
-            } 
+            }
           />
-          <Route 
-            path="/strategies" 
+          <Route
+            path="/backtesting"
             element={
               <ProtectedRoute>
-                <AIStrategiesPage />
+                <BacktestingPage />
               </ProtectedRoute>
-            } 
+            }
           />
-          <Route 
-            path="/strategies/:id" 
+
+          {/* Protected Routes - Auto Trading */}
+          <Route
+            path="/auto-trading"
             element={
               <ProtectedRoute>
-                <StrategyPage />
+                <AutoTradingPage />
               </ProtectedRoute>
-            } 
+            }
           />
-          <Route 
-            path="/assistant" 
+          <Route
+            path="/strategy-optimizer"
             element={
               <ProtectedRoute>
-                <TradingAssistantPage />
+                <StrategyOptimizerPage />
               </ProtectedRoute>
-            } 
+            }
           />
-          <Route 
-            path="/predictions" 
+
+          {/* Protected Routes - History & Monitoring */}
+          <Route
+            path="/trade-history"
             element={
               <ProtectedRoute>
-                <PredictionsPage />
+                <TradeHistoryPage />
               </ProtectedRoute>
-            } 
+            }
           />
-          <Route 
-            path="/portfolio" 
+          <Route
+            path="/alerts"
             element={
               <ProtectedRoute>
-                <PortfolioPage />
+                <AlertsPage />
               </ProtectedRoute>
-            } 
+            }
           />
-          <Route 
-            path="/stock-picks" 
+          <Route
+            path="/analytics"
             element={
               <ProtectedRoute>
-                <StockPicksPage />
+                <AnalyticsPage />
               </ProtectedRoute>
-            } 
+            }
           />
-          <Route 
-            path="/profile" 
+          <Route
+            path="/charts"
             element={
               <ProtectedRoute>
-                <ProfilePage />
+                <ChartsPage />
               </ProtectedRoute>
-            } 
+            }
           />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
         </Routes>
       </Layout>
     </Router>
