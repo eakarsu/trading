@@ -1,0 +1,1236 @@
+{
+  "users": [
+    {
+      "id": "684f930b-7c8e-4f3f-a0c7-c1e40d66cfb1",
+      "username": "trader1",
+      "email": "trader1@trading.com",
+      "createdAt": "2025-07-29T16:04:30.424Z",
+      "updatedAt": "2025-07-29T16:04:30.424Z"
+    },
+    {
+      "id": "9205b6aa-fb37-4a95-a04e-6f7db79c82f6",
+      "username": "investor1",
+      "email": "investor1@trading.com",
+      "createdAt": "2025-07-29T16:04:30.490Z",
+      "updatedAt": "2025-07-29T16:04:30.490Z"
+    },
+    {
+      "id": "3052390e-25b2-4e2a-8fce-97eba0717def",
+      "username": "admin",
+      "email": "admin@trading.com",
+      "createdAt": "2025-07-29T16:04:30.340Z",
+      "updatedAt": "2025-07-29T16:17:15.887Z"
+    }
+  ],
+  "marketData": {
+    "total": 8,
+    "latest": [
+      {
+        "id": "a86a25d2-f3ce-4b1d-8588-985ea43fdf6e",
+        "userId": null,
+        "symbol": "NFLX",
+        "price": "225.74",
+        "volume": "6391662",
+        "high": "237.03",
+        "low": "214.45",
+        "open": "221.22",
+        "close": "225.74",
+        "change": "4.51",
+        "changePercent": "2.00",
+        "marketCap": "468168990388",
+        "pe": "13.64",
+        "eps": "8.30",
+        "dividend": "3.91",
+        "dividendYield": "0.30",
+        "beta": "1.21",
+        "fiftyTwoWeekHigh": "270.89",
+        "fiftyTwoWeekLow": "158.02",
+        "avgVolume": "6391662",
+        "sector": "Technology",
+        "industry": "Software",
+        "timestamp": "2025-07-29T16:04:30.556Z",
+        "source": "yahoo",
+        "metadata": {
+          "dataQuality": "high",
+          "lastUpdated": "2025-07-29T16:04:30.555Z"
+        },
+        "lastUpdated": "2025-07-29T16:14:49.373Z",
+        "createdAt": "2025-07-29T16:04:30.555Z",
+        "updatedAt": "2025-07-29T16:04:30.555Z"
+      },
+      {
+        "id": "c51737f0-48e1-4817-8cbe-674fc2e63df0",
+        "userId": null,
+        "symbol": "AMZN",
+        "price": "167.00",
+        "volume": "10773771",
+        "high": "175.35",
+        "low": "158.65",
+        "open": "163.66",
+        "close": "167.00",
+        "change": "3.34",
+        "changePercent": "2.00",
+        "marketCap": "492003017258",
+        "pe": "20.13",
+        "eps": "10.51",
+        "dividend": "2.54",
+        "dividendYield": "2.38",
+        "beta": "1.79",
+        "fiftyTwoWeekHigh": "200.41",
+        "fiftyTwoWeekLow": "116.90",
+        "avgVolume": "10773771",
+        "sector": "Energy",
+        "industry": "Software",
+        "timestamp": "2025-07-29T16:04:30.556Z",
+        "source": "yahoo",
+        "metadata": {
+          "dataQuality": "high",
+          "lastUpdated": "2025-07-29T16:04:30.555Z"
+        },
+        "lastUpdated": "2025-07-29T16:14:49.373Z",
+        "createdAt": "2025-07-29T16:04:30.555Z",
+        "updatedAt": "2025-07-29T16:04:30.555Z"
+      },
+      {
+        "id": "26699304-dbd0-496d-84ba-69baecfa47ac",
+        "userId": null,
+        "symbol": "NVDA",
+        "price": "360.87",
+        "volume": "8781220",
+        "high": "378.91",
+        "low": "342.82",
+        "open": "353.65",
+        "close": "360.87",
+        "change": "7.22",
+        "changePercent": "2.00",
+        "marketCap": "897799298609",
+        "pe": "25.70",
+        "eps": "1.73",
+        "dividend": "4.30",
+        "dividendYield": "2.47",
+        "beta": "1.73",
+        "fiftyTwoWeekHigh": "433.04",
+        "fiftyTwoWeekLow": "252.61",
+        "avgVolume": "8781220",
+        "sector": "Energy",
+        "industry": "Software",
+        "timestamp": "2025-07-29T16:04:30.556Z",
+        "source": "yahoo",
+        "metadata": {
+          "dataQuality": "high",
+          "lastUpdated": "2025-07-29T16:04:30.555Z"
+        },
+        "lastUpdated": "2025-07-29T16:14:49.373Z",
+        "createdAt": "2025-07-29T16:04:30.555Z",
+        "updatedAt": "2025-07-29T16:04:30.555Z"
+      },
+      {
+        "id": "bbfdb121-4569-463a-a21c-f13ce1fe0fd5",
+        "userId": null,
+        "symbol": "META",
+        "price": "299.15",
+        "volume": "4590080",
+        "high": "314.11",
+        "low": "284.19",
+        "open": "293.17",
+        "close": "299.15",
+        "change": "5.98",
+        "changePercent": "2.00",
+        "marketCap": "204250102666",
+        "pe": "28.86",
+        "eps": "4.59",
+        "dividend": "2.62",
+        "dividendYield": "2.50",
+        "beta": "1.48",
+        "fiftyTwoWeekHigh": "358.98",
+        "fiftyTwoWeekLow": "209.40",
+        "avgVolume": "4590080",
+        "sector": "Finance",
+        "industry": "Software",
+        "timestamp": "2025-07-29T16:04:30.556Z",
+        "source": "yahoo",
+        "metadata": {
+          "dataQuality": "high",
+          "lastUpdated": "2025-07-29T16:04:30.555Z"
+        },
+        "lastUpdated": "2025-07-29T16:14:49.373Z",
+        "createdAt": "2025-07-29T16:04:30.555Z",
+        "updatedAt": "2025-07-29T16:04:30.555Z"
+      },
+      {
+        "id": "2b4a5849-c3df-4f20-be4c-53d106bf4267",
+        "userId": null,
+        "symbol": "TSLA",
+        "price": "342.86",
+        "volume": "8220365",
+        "high": "360.00",
+        "low": "325.71",
+        "open": "336.00",
+        "close": "342.86",
+        "change": "6.86",
+        "changePercent": "2.00",
+        "marketCap": "405320785874",
+        "pe": "24.90",
+        "eps": "8.21",
+        "dividend": "3.46",
+        "dividendYield": "1.51",
+        "beta": "1.98",
+        "fiftyTwoWeekHigh": "411.43",
+        "fiftyTwoWeekLow": "240.00",
+        "avgVolume": "8220365",
+        "sector": "Energy",
+        "industry": "Software",
+        "timestamp": "2025-07-29T16:04:30.556Z",
+        "source": "yahoo",
+        "metadata": {
+          "dataQuality": "high",
+          "lastUpdated": "2025-07-29T16:04:30.555Z"
+        },
+        "lastUpdated": "2025-07-29T16:14:49.373Z",
+        "createdAt": "2025-07-29T16:04:30.555Z",
+        "updatedAt": "2025-07-29T16:04:30.555Z"
+      },
+      {
+        "id": "51fcf685-940d-46d4-9256-6f8df59d105c",
+        "userId": null,
+        "symbol": "GOOGL",
+        "price": "361.15",
+        "volume": "8218254",
+        "high": "379.21",
+        "low": "343.09",
+        "open": "353.93",
+        "close": "361.15",
+        "change": "7.22",
+        "changePercent": "2.00",
+        "marketCap": "175268173946",
+        "pe": "15.70",
+        "eps": "8.94",
+        "dividend": "2.22",
+        "dividendYield": "1.94",
+        "beta": "2.34",
+        "fiftyTwoWeekHigh": "433.38",
+        "fiftyTwoWeekLow": "252.80",
+        "avgVolume": "8218254",
+        "sector": "Technology",
+        "industry": "Software",
+        "timestamp": "2025-07-29T16:04:30.555Z",
+        "source": "yahoo",
+        "metadata": {
+          "dataQuality": "high",
+          "lastUpdated": "2025-07-29T16:04:30.555Z"
+        },
+        "lastUpdated": "2025-07-29T16:14:49.373Z",
+        "createdAt": "2025-07-29T16:04:30.555Z",
+        "updatedAt": "2025-07-29T16:04:30.555Z"
+      },
+      {
+        "id": "633ced3f-c2f1-4884-b7db-067cc57dfdb6",
+        "userId": null,
+        "symbol": "MSFT",
+        "price": "385.01",
+        "volume": "8271060",
+        "high": "404.26",
+        "low": "365.76",
+        "open": "377.31",
+        "close": "385.01",
+        "change": "7.70",
+        "changePercent": "2.00",
+        "marketCap": "286021833787",
+        "pe": "24.24",
+        "eps": "10.27",
+        "dividend": "0.51",
+        "dividendYield": "2.22",
+        "beta": "1.51",
+        "fiftyTwoWeekHigh": "462.01",
+        "fiftyTwoWeekLow": "269.51",
+        "avgVolume": "8271060",
+        "sector": "Energy",
+        "industry": "Software",
+        "timestamp": "2025-07-29T16:04:30.555Z",
+        "source": "yahoo",
+        "metadata": {
+          "dataQuality": "high",
+          "lastUpdated": "2025-07-29T16:04:30.555Z"
+        },
+        "lastUpdated": "2025-07-29T16:14:49.373Z",
+        "createdAt": "2025-07-29T16:04:30.555Z",
+        "updatedAt": "2025-07-29T16:04:30.555Z"
+      },
+      {
+        "id": "64bcc725-9e5a-4129-a66b-e15f7aaac4ad",
+        "userId": null,
+        "symbol": "AAPL",
+        "price": "277.29",
+        "volume": "2598425",
+        "high": "291.15",
+        "low": "263.43",
+        "open": "271.74",
+        "close": "277.29",
+        "change": "5.55",
+        "changePercent": "2.00",
+        "marketCap": "616932350062",
+        "pe": "26.91",
+        "eps": "3.70",
+        "dividend": "1.69",
+        "dividendYield": "1.83",
+        "beta": "0.59",
+        "fiftyTwoWeekHigh": "332.75",
+        "fiftyTwoWeekLow": "194.10",
+        "avgVolume": "2598425",
+        "sector": "Technology",
+        "industry": "Software",
+        "timestamp": "2025-07-29T16:04:30.555Z",
+        "source": "yahoo",
+        "metadata": {
+          "dataQuality": "high",
+          "lastUpdated": "2025-07-29T16:04:30.555Z"
+        },
+        "lastUpdated": "2025-07-29T16:14:49.373Z",
+        "createdAt": "2025-07-29T16:04:30.555Z",
+        "updatedAt": "2025-07-29T16:04:30.555Z"
+      }
+    ]
+  },
+  "portfolios": [
+    {
+      "id": "680202b3-2b33-44a1-88be-43276dbdba81",
+      "userId": "3052390e-25b2-4e2a-8fce-97eba0717def",
+      "name": "Growth Portfolio",
+      "description": "High-growth technology stocks",
+      "totalValue": "150000.00",
+      "cashBalance": "10000.00",
+      "totalReturn": "25000.00",
+      "totalReturnPercent": "20.0000",
+      "dayChange": "1500.00",
+      "dayChangePercent": "1.0000",
+      "holdings": [
+        {
+          "shares": 100,
+          "symbol": "AAPL",
+          "avgPrice": 150,
+          "currentPrice": 155
+        },
+        {
+          "shares": 50,
+          "symbol": "GOOGL",
+          "avgPrice": 2500,
+          "currentPrice": 2600
+        },
+        {
+          "shares": 25,
+          "symbol": "TSLA",
+          "avgPrice": 800,
+          "currentPrice": 850
+        }
+      ],
+      "riskProfile": "aggressive",
+      "strategy": "Growth Investing",
+      "isActive": true,
+      "lastRebalanced": null,
+      "performance": {
+        "ytd": 0,
+        "oneDay": 0,
+        "oneWeek": 0,
+        "oneYear": 0,
+        "oneMonth": 0,
+        "inception": 0,
+        "sixMonths": 0,
+        "threeMonths": 0
+      },
+      "allocation": {
+        "cash": 0,
+        "bonds": 0,
+        "other": 0,
+        "reits": 0,
+        "crypto": 0,
+        "stocks": 0,
+        "commodities": 0
+      },
+      "settings": {
+        "autoRebalance": false,
+        "taxOptimization": false,
+        "rebalanceThreshold": 5,
+        "dividendReinvestment": true
+      },
+      "createdAt": "2025-07-29T16:04:30.560Z",
+      "updatedAt": "2025-07-29T16:04:30.560Z",
+      "user": {
+        "username": "admin",
+        "email": "admin@trading.com"
+      }
+    },
+    {
+      "id": "1d19138e-d679-4949-b6c3-8de4af4ca635",
+      "userId": "684f930b-7c8e-4f3f-a0c7-c1e40d66cfb1",
+      "name": "Balanced Portfolio",
+      "description": "Diversified portfolio with moderate risk",
+      "totalValue": "75000.00",
+      "cashBalance": "5000.00",
+      "totalReturn": "8000.00",
+      "totalReturnPercent": "12.0000",
+      "dayChange": "300.00",
+      "dayChangePercent": "0.4000",
+      "holdings": [
+        {
+          "shares": 75,
+          "symbol": "MSFT",
+          "avgPrice": 300,
+          "currentPrice": 310
+        },
+        {
+          "shares": 30,
+          "symbol": "AMZN",
+          "avgPrice": 3200,
+          "currentPrice": 3300
+        },
+        {
+          "shares": 40,
+          "symbol": "NVDA",
+          "avgPrice": 400,
+          "currentPrice": 420
+        }
+      ],
+      "riskProfile": "moderate",
+      "strategy": "Balanced Investing",
+      "isActive": true,
+      "lastRebalanced": null,
+      "performance": {
+        "ytd": 0,
+        "oneDay": 0,
+        "oneWeek": 0,
+        "oneYear": 0,
+        "oneMonth": 0,
+        "inception": 0,
+        "sixMonths": 0,
+        "threeMonths": 0
+      },
+      "allocation": {
+        "cash": 0,
+        "bonds": 0,
+        "other": 0,
+        "reits": 0,
+        "crypto": 0,
+        "stocks": 0,
+        "commodities": 0
+      },
+      "settings": {
+        "autoRebalance": false,
+        "taxOptimization": false,
+        "rebalanceThreshold": 5,
+        "dividendReinvestment": true
+      },
+      "createdAt": "2025-07-29T16:04:30.560Z",
+      "updatedAt": "2025-07-29T16:04:30.560Z",
+      "user": {
+        "username": "trader1",
+        "email": "trader1@trading.com"
+      }
+    },
+    {
+      "id": "bde0c57e-22c4-40d2-bc69-1461e05b72bf",
+      "userId": "9205b6aa-fb37-4a95-a04e-6f7db79c82f6",
+      "name": "Conservative Portfolio",
+      "description": "Low-risk dividend-focused portfolio",
+      "totalValue": "50000.00",
+      "cashBalance": "8000.00",
+      "totalReturn": "3000.00",
+      "totalReturnPercent": "6.0000",
+      "dayChange": "100.00",
+      "dayChangePercent": "0.2000",
+      "holdings": [
+        {
+          "shares": 50,
+          "symbol": "AAPL",
+          "avgPrice": 150,
+          "currentPrice": 155
+        },
+        {
+          "shares": 40,
+          "symbol": "MSFT",
+          "avgPrice": 300,
+          "currentPrice": 310
+        }
+      ],
+      "riskProfile": "conservative",
+      "strategy": "Dividend Investing",
+      "isActive": true,
+      "lastRebalanced": null,
+      "performance": {
+        "ytd": 0,
+        "oneDay": 0,
+        "oneWeek": 0,
+        "oneYear": 0,
+        "oneMonth": 0,
+        "inception": 0,
+        "sixMonths": 0,
+        "threeMonths": 0
+      },
+      "allocation": {
+        "cash": 0,
+        "bonds": 0,
+        "other": 0,
+        "reits": 0,
+        "crypto": 0,
+        "stocks": 0,
+        "commodities": 0
+      },
+      "settings": {
+        "autoRebalance": false,
+        "taxOptimization": false,
+        "rebalanceThreshold": 5,
+        "dividendReinvestment": true
+      },
+      "createdAt": "2025-07-29T16:04:30.560Z",
+      "updatedAt": "2025-07-29T16:04:30.560Z",
+      "user": {
+        "username": "investor1",
+        "email": "investor1@trading.com"
+      }
+    }
+  ],
+  "strategies": [
+    {
+      "id": "d2513491-4b39-4fb0-8691-aeb753e385e0",
+      "userId": "3052390e-25b2-4e2a-8fce-97eba0717def",
+      "name": "Momentum Trading",
+      "description": "Buy stocks with strong upward momentum",
+      "type": "momentum",
+      "riskLevel": "high",
+      "timeHorizon": "short",
+      "parameters": {
+        "priceChange": 5,
+        "rsiThreshold": 70,
+        "volumeMultiplier": 2
+      },
+      "rules": {
+        "exit": [
+          "RSI < 30",
+          "Stop loss at -10%",
+          "Take profit at +20%"
+        ],
+        "entry": [
+          "RSI > 70",
+          "Volume > 2x average",
+          "Price up 5% in 3 days"
+        ],
+        "riskManagement": [
+          "Max position size 5%",
+          "Max daily loss 2%"
+        ]
+      },
+      "performance": {
+        "beta": 0,
+        "alpha": 0,
+        "winRate": 0,
+        "volatility": 0,
+        "maxDrawdown": 0,
+        "sharpeRatio": 0,
+        "totalReturn": 0,
+        "profitFactor": 0,
+        "annualizedReturn": 0
+      },
+      "backtestResults": {
+        "avgWin": 0,
+        "avgLoss": 0,
+        "endDate": null,
+        "startDate": null,
+        "finalValue": 0,
+        "largestWin": 0,
+        "largestLoss": 0,
+        "totalTrades": 0,
+        "losingTrades": 0,
+        "winningTrades": 0,
+        "initialCapital": 0
+      },
+      "isActive": true,
+      "isPublic": true,
+      "tags": [
+        "momentum",
+        "short-term",
+        "high-risk"
+      ],
+      "lastBacktest": null,
+      "lastUsed": null,
+      "usageCount": 0,
+      "rating": null,
+      "ratingCount": 0,
+      "createdAt": "2025-07-29T16:04:30.563Z",
+      "updatedAt": "2025-07-29T16:04:30.563Z",
+      "user": {
+        "username": "admin",
+        "email": "admin@trading.com"
+      }
+    },
+    {
+      "id": "3d160e23-4e25-424c-942c-6c3638b80647",
+      "userId": "684f930b-7c8e-4f3f-a0c7-c1e40d66cfb1",
+      "name": "Value Investing",
+      "description": "Buy undervalued stocks with strong fundamentals",
+      "type": "value",
+      "riskLevel": "medium",
+      "timeHorizon": "long",
+      "parameters": {
+        "pbRatio": 1.5,
+        "peRatio": 15,
+        "debtToEquity": 0.5
+      },
+      "rules": {
+        "exit": [
+          "P/E > 25",
+          "Fundamental deterioration"
+        ],
+        "entry": [
+          "P/E < 15",
+          "P/B < 1.5",
+          "Debt/Equity < 0.5"
+        ],
+        "riskManagement": [
+          "Max position size 10%",
+          "Diversify across sectors"
+        ]
+      },
+      "performance": {
+        "beta": 0,
+        "alpha": 0,
+        "winRate": 0,
+        "volatility": 0,
+        "maxDrawdown": 0,
+        "sharpeRatio": 0,
+        "totalReturn": 0,
+        "profitFactor": 0,
+        "annualizedReturn": 0
+      },
+      "backtestResults": {
+        "avgWin": 0,
+        "avgLoss": 0,
+        "endDate": null,
+        "startDate": null,
+        "finalValue": 0,
+        "largestWin": 0,
+        "largestLoss": 0,
+        "totalTrades": 0,
+        "losingTrades": 0,
+        "winningTrades": 0,
+        "initialCapital": 0
+      },
+      "isActive": true,
+      "isPublic": true,
+      "tags": [
+        "value",
+        "long-term",
+        "fundamentals"
+      ],
+      "lastBacktest": null,
+      "lastUsed": null,
+      "usageCount": 0,
+      "rating": null,
+      "ratingCount": 0,
+      "createdAt": "2025-07-29T16:04:30.563Z",
+      "updatedAt": "2025-07-29T16:04:30.563Z",
+      "user": {
+        "username": "trader1",
+        "email": "trader1@trading.com"
+      }
+    },
+    {
+      "id": "e38d0b02-554f-47db-b454-70d2e8d76bba",
+      "userId": "9205b6aa-fb37-4a95-a04e-6f7db79c82f6",
+      "name": "Dividend Growth",
+      "description": "Focus on stocks with growing dividends",
+      "type": "dividend",
+      "riskLevel": "low",
+      "timeHorizon": "long",
+      "parameters": {
+        "payoutRatio": 60,
+        "dividendYield": 3,
+        "dividendGrowth": 5
+      },
+      "rules": {
+        "exit": [
+          "Dividend cut",
+          "Payout ratio > 80%"
+        ],
+        "entry": [
+          "Dividend yield > 3%",
+          "Dividend growth > 5%",
+          "Payout ratio < 60%"
+        ],
+        "riskManagement": [
+          "Max position size 8%",
+          "Focus on dividend aristocrats"
+        ]
+      },
+      "performance": {
+        "beta": 0,
+        "alpha": 0,
+        "winRate": 0,
+        "volatility": 0,
+        "maxDrawdown": 0,
+        "sharpeRatio": 0,
+        "totalReturn": 0,
+        "profitFactor": 0,
+        "annualizedReturn": 0
+      },
+      "backtestResults": {
+        "avgWin": 0,
+        "avgLoss": 0,
+        "endDate": null,
+        "startDate": null,
+        "finalValue": 0,
+        "largestWin": 0,
+        "largestLoss": 0,
+        "totalTrades": 0,
+        "losingTrades": 0,
+        "winningTrades": 0,
+        "initialCapital": 0
+      },
+      "isActive": true,
+      "isPublic": false,
+      "tags": [
+        "dividend",
+        "income",
+        "conservative"
+      ],
+      "lastBacktest": null,
+      "lastUsed": null,
+      "usageCount": 0,
+      "rating": null,
+      "ratingCount": 0,
+      "createdAt": "2025-07-29T16:04:30.563Z",
+      "updatedAt": "2025-07-29T16:04:30.563Z",
+      "user": {
+        "username": "investor1",
+        "email": "investor1@trading.com"
+      }
+    },
+    {
+      "id": "6dd9c1b6-d916-4069-bc11-60ab14e25b64",
+      "userId": "3052390e-25b2-4e2a-8fce-97eba0717def",
+      "name": "AI Momentum Strategy",
+      "description": "AI-powered momentum trading strategy that identifies trending stocks using machine learning algorithms",
+      "type": "momentum",
+      "riskLevel": "medium",
+      "timeHorizon": "medium",
+      "parameters": [
+        {
+          "name": "momentumThreshold",
+          "value": 3,
+          "description": "AI-calculated momentum threshold"
+        },
+        {
+          "name": "confidenceLevel",
+          "value": 0.85,
+          "description": "AI confidence level for trades"
+        },
+        {
+          "name": "stopLoss",
+          "value": 4.5,
+          "description": "Dynamic stop loss percentage"
+        },
+        {
+          "name": "positionSize",
+          "value": 2.5,
+          "description": "AI-optimized position size"
+        }
+      ],
+      "rules": {
+        "exit": [],
+        "entry": [],
+        "riskManagement": []
+      },
+      "performance": 0,
+      "backtestResults": {
+        "avgWin": 0,
+        "avgLoss": 0,
+        "endDate": null,
+        "startDate": null,
+        "finalValue": 0,
+        "largestWin": 0,
+        "largestLoss": 0,
+        "totalTrades": 0,
+        "losingTrades": 0,
+        "winningTrades": 0,
+        "initialCapital": 0
+      },
+      "isActive": true,
+      "isPublic": false,
+      "tags": [],
+      "lastBacktest": null,
+      "lastUsed": null,
+      "usageCount": 0,
+      "rating": null,
+      "ratingCount": 0,
+      "createdAt": "2025-07-29T16:07:17.739Z",
+      "updatedAt": "2025-07-29T16:07:17.739Z",
+      "user": {
+        "username": "admin",
+        "email": "admin@trading.com"
+      }
+    },
+    {
+      "id": "d0ae5797-03d4-451e-bd32-d4ba8eb8c2d2",
+      "userId": "3052390e-25b2-4e2a-8fce-97eba0717def",
+      "name": "AI Momentum Strategy",
+      "description": "AI-powered momentum trading strategy that identifies trending stocks using machine learning algorithms",
+      "type": "momentum",
+      "riskLevel": "medium",
+      "timeHorizon": "medium",
+      "parameters": [
+        {
+          "name": "momentumThreshold",
+          "value": 3,
+          "description": "AI-calculated momentum threshold"
+        },
+        {
+          "name": "confidenceLevel",
+          "value": 0.85,
+          "description": "AI confidence level for trades"
+        },
+        {
+          "name": "stopLoss",
+          "value": 4.5,
+          "description": "Dynamic stop loss percentage"
+        },
+        {
+          "name": "positionSize",
+          "value": 2.5,
+          "description": "AI-optimized position size"
+        }
+      ],
+      "rules": {
+        "exit": [],
+        "entry": [],
+        "riskManagement": []
+      },
+      "performance": 0,
+      "backtestResults": {
+        "avgWin": 0,
+        "avgLoss": 0,
+        "endDate": null,
+        "startDate": null,
+        "finalValue": 0,
+        "largestWin": 0,
+        "largestLoss": 0,
+        "totalTrades": 0,
+        "losingTrades": 0,
+        "winningTrades": 0,
+        "initialCapital": 0
+      },
+      "isActive": true,
+      "isPublic": false,
+      "tags": [],
+      "lastBacktest": null,
+      "lastUsed": null,
+      "usageCount": 0,
+      "rating": null,
+      "ratingCount": 0,
+      "createdAt": "2025-07-29T16:08:42.432Z",
+      "updatedAt": "2025-07-29T16:08:42.432Z",
+      "user": {
+        "username": "admin",
+        "email": "admin@trading.com"
+      }
+    }
+  ],
+  "predictions": {
+    "total": 3,
+    "latest": [
+      {
+        "id": "d34e7e77-d15e-46a5-8249-9dbdd310ece5",
+        "userId": "3052390e-25b2-4e2a-8fce-97eba0717def",
+        "symbol": "AAPL",
+        "predictionType": "price",
+        "timeframe": "1w",
+        "currentPrice": "155.50",
+        "predictedPrice": "165.00",
+        "predictedDirection": "up",
+        "confidence": "75.50",
+        "accuracy": null,
+        "model": "lstm",
+        "modelVersion": null,
+        "features": {},
+        "technicalIndicators": {
+          "ema": 154,
+          "rsi": 65,
+          "sma": 152,
+          "macd": 2.5,
+          "bollinger": {
+            "lower": 150,
+            "upper": 160,
+            "middle": 155
+          }
+        },
+        "fundamentalData": {
+          "pe": null,
+          "eps": null,
+          "roa": null,
+          "roe": null,
+          "debt": null,
+          "revenue": null,
+          "quickRatio": null,
+          "currentRatio": null
+        },
+        "marketSentiment": {
+          "newsScore": null,
+          "socialScore": null,
+          "analystRating": null,
+          "institutionalFlow": null
+        },
+        "predictionDate": "2025-07-29T16:04:30.565Z",
+        "targetDate": "2025-08-05T16:04:30.565Z",
+        "actualPrice": null,
+        "actualDirection": null,
+        "isResolved": false,
+        "resolvedAt": null,
+        "error": null,
+        "absoluteError": null,
+        "percentageError": null,
+        "notes": null,
+        "metadata": null,
+        "createdAt": "2025-07-29T16:04:30.565Z",
+        "updatedAt": "2025-07-29T16:04:30.565Z",
+        "user": {
+          "username": "admin",
+          "email": "admin@trading.com"
+        }
+      },
+      {
+        "id": "681e16fd-0280-4865-bd00-6080db29b92a",
+        "userId": "684f930b-7c8e-4f3f-a0c7-c1e40d66cfb1",
+        "symbol": "GOOGL",
+        "predictionType": "direction",
+        "timeframe": "1d",
+        "currentPrice": "2600.00",
+        "predictedPrice": null,
+        "predictedDirection": "up",
+        "confidence": "68.20",
+        "accuracy": null,
+        "model": "random_forest",
+        "modelVersion": null,
+        "features": {},
+        "technicalIndicators": {
+          "ema": 2590,
+          "rsi": 58,
+          "sma": 2580,
+          "macd": 15.2
+        },
+        "fundamentalData": {
+          "pe": null,
+          "eps": null,
+          "roa": null,
+          "roe": null,
+          "debt": null,
+          "revenue": null,
+          "quickRatio": null,
+          "currentRatio": null
+        },
+        "marketSentiment": {
+          "newsScore": null,
+          "socialScore": null,
+          "analystRating": null,
+          "institutionalFlow": null
+        },
+        "predictionDate": "2025-07-29T16:04:30.565Z",
+        "targetDate": "2025-07-30T16:04:30.565Z",
+        "actualPrice": null,
+        "actualDirection": null,
+        "isResolved": false,
+        "resolvedAt": null,
+        "error": null,
+        "absoluteError": null,
+        "percentageError": null,
+        "notes": null,
+        "metadata": null,
+        "createdAt": "2025-07-29T16:04:30.565Z",
+        "updatedAt": "2025-07-29T16:04:30.565Z",
+        "user": {
+          "username": "trader1",
+          "email": "trader1@trading.com"
+        }
+      },
+      {
+        "id": "f2eecd05-2409-49cb-9217-4419a2b6c2d5",
+        "userId": "9205b6aa-fb37-4a95-a04e-6f7db79c82f6",
+        "symbol": "MSFT",
+        "predictionType": "price",
+        "timeframe": "1m",
+        "currentPrice": "310.00",
+        "predictedPrice": "325.00",
+        "predictedDirection": "up",
+        "confidence": "82.10",
+        "accuracy": null,
+        "model": "ensemble",
+        "modelVersion": null,
+        "features": {},
+        "technicalIndicators": {
+          "ema": 308,
+          "rsi": 55,
+          "sma": 305,
+          "macd": 5.8
+        },
+        "fundamentalData": {
+          "pe": null,
+          "eps": null,
+          "roa": null,
+          "roe": null,
+          "debt": null,
+          "revenue": null,
+          "quickRatio": null,
+          "currentRatio": null
+        },
+        "marketSentiment": {
+          "newsScore": null,
+          "socialScore": null,
+          "analystRating": null,
+          "institutionalFlow": null
+        },
+        "predictionDate": "2025-07-29T16:04:30.566Z",
+        "targetDate": "2025-08-28T16:04:30.565Z",
+        "actualPrice": null,
+        "actualDirection": null,
+        "isResolved": false,
+        "resolvedAt": null,
+        "error": null,
+        "absoluteError": null,
+        "percentageError": null,
+        "notes": null,
+        "metadata": null,
+        "createdAt": "2025-07-29T16:04:30.565Z",
+        "updatedAt": "2025-07-29T16:04:30.565Z",
+        "user": {
+          "username": "investor1",
+          "email": "investor1@trading.com"
+        }
+      }
+    ]
+  },
+  "marketAnalyses": {
+    "total": 2,
+    "latest": [
+      {
+        "id": "cefdcdb7-511a-4c6d-9bdd-52f3c46a9381",
+        "userId": "3052390e-25b2-4e2a-8fce-97eba0717def",
+        "symbol": "AAPL",
+        "analysisType": "comprehensive",
+        "timeframe": "1d",
+        "currentPrice": "155.50",
+        "priceChange": "2.50",
+        "priceChangePercent": "1.6300",
+        "volume": "45000000",
+        "avgVolume": "42000000",
+        "technicalAnalysis": {
+          "trend": "bullish",
+          "signals": [
+            "Golden cross on MACD",
+            "Breaking resistance at 155"
+          ],
+          "support": [
+            150,
+            145
+          ],
+          "indicators": {
+            "rsi": 65,
+            "macd": 2.5,
+            "bollinger": {
+              "lower": 150,
+              "upper": 160,
+              "middle": 155
+            }
+          },
+          "resistance": [
+            160,
+            165
+          ]
+        },
+        "fundamentalAnalysis": {
+          "pe": 28.5,
+          "eps": 5.45,
+          "roe": 147.4,
+          "revenue": 394000000000,
+          "profitMargin": 25.3,
+          "revenueGrowth": 8.2
+        },
+        "sentimentAnalysis": {
+          "news": {
+            "score": null,
+            "articles": [],
+            "keywords": []
+          },
+          "social": {
+            "score": null,
+            "mentions": 0,
+            "trending": false,
+            "sentiment": null
+          },
+          "analyst": {
+            "rating": null,
+            "targetPrice": null,
+            "recommendations": {
+              "buy": 0,
+              "hold": 0,
+              "sell": 0
+            }
+          },
+          "overall": null,
+          "institutional": {
+            "flow": null,
+            "changes": [],
+            "ownership": null
+          }
+        },
+        "riskAnalysis": {
+          "var": null,
+          "beta": null,
+          "riskScore": null,
+          "volatility": null,
+          "maxDrawdown": null,
+          "riskFactors": [],
+          "sharpeRatio": null,
+          "correlations": {}
+        },
+        "recommendation": "buy",
+        "confidence": "78.50",
+        "targetPrice": "170.00",
+        "stopLoss": "145.00",
+        "timeHorizon": "medium",
+        "keyPoints": [
+          "Strong quarterly earnings beat expectations",
+          "iPhone sales showing resilience",
+          "Services revenue growing steadily"
+        ],
+        "risks": [],
+        "opportunities": [],
+        "summary": "Apple shows strong fundamentals with growing services revenue and resilient iPhone sales. Technical indicators suggest continued upward momentum.",
+        "isPublic": true,
+        "tags": [
+          "technology",
+          "large-cap",
+          "growth"
+        ],
+        "metadata": null,
+        "createdAt": "2025-07-29T16:04:30.568Z",
+        "updatedAt": "2025-07-29T16:04:30.568Z",
+        "user": {
+          "username": "admin",
+          "email": "admin@trading.com"
+        }
+      },
+      {
+        "id": "bb55dc89-4104-4617-aa59-30ed257b7c08",
+        "userId": "684f930b-7c8e-4f3f-a0c7-c1e40d66cfb1",
+        "symbol": "TSLA",
+        "analysisType": "technical",
+        "timeframe": "1w",
+        "currentPrice": "850.00",
+        "priceChange": "-15.50",
+        "priceChangePercent": "-1.7900",
+        "volume": "28000000",
+        "avgVolume": "25000000",
+        "technicalAnalysis": {
+          "trend": "bearish",
+          "signals": [
+            "Death cross forming",
+            "Breaking below 50-day MA"
+          ],
+          "support": [
+            800,
+            750
+          ],
+          "indicators": {
+            "rsi": 42,
+            "macd": -8.2,
+            "bollinger": {
+              "lower": 800,
+              "upper": 900,
+              "middle": 850
+            }
+          },
+          "resistance": [
+            900,
+            950
+          ]
+        },
+        "fundamentalAnalysis": {
+          "pe": null,
+          "eps": null,
+          "roa": null,
+          "roe": null,
+          "revenue": null,
+          "bookValue": null,
+          "quickRatio": null,
+          "payoutRatio": null,
+          "priceToBook": null,
+          "currentRatio": null,
+          "debtToEquity": null,
+          "profitMargin": null,
+          "dividendYield": null,
+          "revenueGrowth": null
+        },
+        "sentimentAnalysis": {
+          "news": {
+            "score": null,
+            "articles": [],
+            "keywords": []
+          },
+          "social": {
+            "score": null,
+            "mentions": 0,
+            "trending": false,
+            "sentiment": null
+          },
+          "analyst": {
+            "rating": null,
+            "targetPrice": null,
+            "recommendations": {
+              "buy": 0,
+              "hold": 0,
+              "sell": 0
+            }
+          },
+          "overall": null,
+          "institutional": {
+            "flow": null,
+            "changes": [],
+            "ownership": null
+          }
+        },
+        "riskAnalysis": {
+          "var": null,
+          "beta": null,
+          "riskScore": null,
+          "volatility": null,
+          "maxDrawdown": null,
+          "riskFactors": [],
+          "sharpeRatio": null,
+          "correlations": {}
+        },
+        "recommendation": "hold",
+        "confidence": "65.20",
+        "targetPrice": "800.00",
+        "stopLoss": "750.00",
+        "timeHorizon": "short",
+        "keyPoints": [
+          "Technical indicators showing weakness",
+          "High volatility continues",
+          "Support level at $800 critical"
+        ],
+        "risks": [],
+        "opportunities": [],
+        "summary": "Tesla showing technical weakness with bearish signals. Watch for support at $800 level.",
+        "isPublic": false,
+        "tags": [
+          "electric-vehicles",
+          "high-volatility",
+          "growth"
+        ],
+        "metadata": null,
+        "createdAt": "2025-07-29T16:04:30.568Z",
+        "updatedAt": "2025-07-29T16:04:30.568Z",
+        "user": {
+          "username": "trader1",
+          "email": "trader1@trading.com"
+        }
+      }
+    ]
+  }
+}

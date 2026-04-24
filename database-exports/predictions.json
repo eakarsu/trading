@@ -1,0 +1,169 @@
+[
+  {
+    "id": "d34e7e77-d15e-46a5-8249-9dbdd310ece5",
+    "userId": "3052390e-25b2-4e2a-8fce-97eba0717def",
+    "symbol": "AAPL",
+    "predictionType": "price",
+    "timeframe": "1w",
+    "currentPrice": "155.50",
+    "predictedPrice": "165.00",
+    "predictedDirection": "up",
+    "confidence": "75.50",
+    "accuracy": null,
+    "model": "lstm",
+    "modelVersion": null,
+    "features": {},
+    "technicalIndicators": {
+      "ema": 154,
+      "rsi": 65,
+      "sma": 152,
+      "macd": 2.5,
+      "bollinger": {
+        "lower": 150,
+        "upper": 160,
+        "middle": 155
+      }
+    },
+    "fundamentalData": {
+      "pe": null,
+      "eps": null,
+      "roa": null,
+      "roe": null,
+      "debt": null,
+      "revenue": null,
+      "quickRatio": null,
+      "currentRatio": null
+    },
+    "marketSentiment": {
+      "newsScore": null,
+      "socialScore": null,
+      "analystRating": null,
+      "institutionalFlow": null
+    },
+    "predictionDate": "2025-07-29T16:04:30.565Z",
+    "targetDate": "2025-08-05T16:04:30.565Z",
+    "actualPrice": null,
+    "actualDirection": null,
+    "isResolved": false,
+    "resolvedAt": null,
+    "error": null,
+    "absoluteError": null,
+    "percentageError": null,
+    "notes": null,
+    "metadata": null,
+    "createdAt": "2025-07-29T16:04:30.565Z",
+    "updatedAt": "2025-07-29T16:04:30.565Z",
+    "user": {
+      "username": "admin",
+      "email": "admin@trading.com"
+    }
+  },
+  {
+    "id": "681e16fd-0280-4865-bd00-6080db29b92a",
+    "userId": "684f930b-7c8e-4f3f-a0c7-c1e40d66cfb1",
+    "symbol": "GOOGL",
+    "predictionType": "direction",
+    "timeframe": "1d",
+    "currentPrice": "2600.00",
+    "predictedPrice": null,
+    "predictedDirection": "up",
+    "confidence": "68.20",
+    "accuracy": null,
+    "model": "random_forest",
+    "modelVersion": null,
+    "features": {},
+    "technicalIndicators": {
+      "ema": 2590,
+      "rsi": 58,
+      "sma": 2580,
+      "macd": 15.2
+    },
+    "fundamentalData": {
+      "pe": null,
+      "eps": null,
+      "roa": null,
+      "roe": null,
+      "debt": null,
+      "revenue": null,
+      "quickRatio": null,
+      "currentRatio": null
+    },
+    "marketSentiment": {
+      "newsScore": null,
+      "socialScore": null,
+      "analystRating": null,
+      "institutionalFlow": null
+    },
+    "predictionDate": "2025-07-29T16:04:30.565Z",
+    "targetDate": "2025-07-30T16:04:30.565Z",
+    "actualPrice": null,
+    "actualDirection": null,
+    "isResolved": false,
+    "resolvedAt": null,
+    "error": null,
+    "absoluteError": null,
+    "percentageError": null,
+    "notes": null,
+    "metadata": null,
+    "createdAt": "2025-07-29T16:04:30.565Z",
+    "updatedAt": "2025-07-29T16:04:30.565Z",
+    "user": {
+      "username": "trader1",
+      "email": "trader1@trading.com"
+    }
+  },
+  {
+    "id": "f2eecd05-2409-49cb-9217-4419a2b6c2d5",
+    "userId": "9205b6aa-fb37-4a95-a04e-6f7db79c82f6",
+    "symbol": "MSFT",
+    "predictionType": "price",
+    "timeframe": "1m",
+    "currentPrice": "310.00",
+    "predictedPrice": "325.00",
+    "predictedDirection": "up",
+    "confidence": "82.10",
+    "accuracy": null,
+    "model": "ensemble",
+    "modelVersion": null,
+    "features": {},
+    "technicalIndicators": {
+      "ema": 308,
+      "rsi": 55,
+      "sma": 305,
+      "macd": 5.8
+    },
+    "fundamentalData": {
+      "pe": null,
+      "eps": null,
+      "roa": null,
+      "roe": null,
+      "debt": null,
+      "revenue": null,
+      "quickRatio": null,
+      "currentRatio": null
+    },
+    "marketSentiment": {
+      "newsScore": null,
+      "socialScore": null,
+      "analystRating": null,
+      "institutionalFlow": null
+    },
+    "predictionDate": "2025-07-29T16:04:30.566Z",
+    "targetDate": "2025-08-28T16:04:30.565Z",
+    "actualPrice": null,
+    "actualDirection": null,
+    "isResolved": false,
+    "resolvedAt": null,
+    "error": null,
+    "absoluteError": null,
+    "percentageError": null,
+    "notes": null,
+    "metadata": null,
+    "createdAt": "2025-07-29T16:04:30.565Z",
+    "updatedAt": "2025-07-29T16:04:30.565Z",
+    "user": {
+      "username": "investor1",
+      "email": "investor1@trading.com"
+    }
+  }
+]

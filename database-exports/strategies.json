@@ -1,0 +1,344 @@
+[
+  {
+    "id": "d2513491-4b39-4fb0-8691-aeb753e385e0",
+    "userId": "3052390e-25b2-4e2a-8fce-97eba0717def",
+    "name": "Momentum Trading",
+    "description": "Buy stocks with strong upward momentum",
+    "type": "momentum",
+    "riskLevel": "high",
+    "timeHorizon": "short",
+    "parameters": {
+      "priceChange": 5,
+      "rsiThreshold": 70,
+      "volumeMultiplier": 2
+    },
+    "rules": {
+      "exit": [
+        "RSI < 30",
+        "Stop loss at -10%",
+        "Take profit at +20%"
+      ],
+      "entry": [
+        "RSI > 70",
+        "Volume > 2x average",
+        "Price up 5% in 3 days"
+      ],
+      "riskManagement": [
+        "Max position size 5%",
+        "Max daily loss 2%"
+      ]
+    },
+    "performance": {
+      "beta": 0,
+      "alpha": 0,
+      "winRate": 0,
+      "volatility": 0,
+      "maxDrawdown": 0,
+      "sharpeRatio": 0,
+      "totalReturn": 0,
+      "profitFactor": 0,
+      "annualizedReturn": 0
+    },
+    "backtestResults": {
+      "avgWin": 0,
+      "avgLoss": 0,
+      "endDate": null,
+      "startDate": null,
+      "finalValue": 0,
+      "largestWin": 0,
+      "largestLoss": 0,
+      "totalTrades": 0,
+      "losingTrades": 0,
+      "winningTrades": 0,
+      "initialCapital": 0
+    },
+    "isActive": true,
+    "isPublic": true,
+    "tags": [
+      "momentum",
+      "short-term",
+      "high-risk"
+    ],
+    "lastBacktest": null,
+    "lastUsed": null,
+    "usageCount": 0,
+    "rating": null,
+    "ratingCount": 0,
+    "createdAt": "2025-07-29T16:04:30.563Z",
+    "updatedAt": "2025-07-29T16:04:30.563Z",
+    "user": {
+      "username": "admin",
+      "email": "admin@trading.com"
+    }
+  },
+  {
+    "id": "3d160e23-4e25-424c-942c-6c3638b80647",
+    "userId": "684f930b-7c8e-4f3f-a0c7-c1e40d66cfb1",
+    "name": "Value Investing",
+    "description": "Buy undervalued stocks with strong fundamentals",
+    "type": "value",
+    "riskLevel": "medium",
+    "timeHorizon": "long",
+    "parameters": {
+      "pbRatio": 1.5,
+      "peRatio": 15,
+      "debtToEquity": 0.5
+    },
+    "rules": {
+      "exit": [
+        "P/E > 25",
+        "Fundamental deterioration"
+      ],
+      "entry": [
+        "P/E < 15",
+        "P/B < 1.5",
+        "Debt/Equity < 0.5"
+      ],
+      "riskManagement": [
+        "Max position size 10%",
+        "Diversify across sectors"
+      ]
+    },
+    "performance": {
+      "beta": 0,
+      "alpha": 0,
+      "winRate": 0,
+      "volatility": 0,
+      "maxDrawdown": 0,
+      "sharpeRatio": 0,
+      "totalReturn": 0,
+      "profitFactor": 0,
+      "annualizedReturn": 0
+    },
+    "backtestResults": {
+      "avgWin": 0,
+      "avgLoss": 0,
+      "endDate": null,
+      "startDate": null,
+      "finalValue": 0,
+      "largestWin": 0,
+      "largestLoss": 0,
+      "totalTrades": 0,
+      "losingTrades": 0,
+      "winningTrades": 0,
+      "initialCapital": 0
+    },
+    "isActive": true,
+    "isPublic": true,
+    "tags": [
+      "value",
+      "long-term",
+      "fundamentals"
+    ],
+    "lastBacktest": null,
+    "lastUsed": null,
+    "usageCount": 0,
+    "rating": null,
+    "ratingCount": 0,
+    "createdAt": "2025-07-29T16:04:30.563Z",
+    "updatedAt": "2025-07-29T16:04:30.563Z",
+    "user": {
+      "username": "trader1",
+      "email": "trader1@trading.com"
+    }
+  },
+  {
+    "id": "e38d0b02-554f-47db-b454-70d2e8d76bba",
+    "userId": "9205b6aa-fb37-4a95-a04e-6f7db79c82f6",
+    "name": "Dividend Growth",
+    "description": "Focus on stocks with growing dividends",
+    "type": "dividend",
+    "riskLevel": "low",
+    "timeHorizon": "long",
+    "parameters": {
+      "payoutRatio": 60,
+      "dividendYield": 3,
+      "dividendGrowth": 5
+    },
+    "rules": {
+      "exit": [
+        "Dividend cut",
+        "Payout ratio > 80%"
+      ],
+      "entry": [
+        "Dividend yield > 3%",
+        "Dividend growth > 5%",
+        "Payout ratio < 60%"
+      ],
+      "riskManagement": [
+        "Max position size 8%",
+        "Focus on dividend aristocrats"
+      ]
+    },
+    "performance": {
+      "beta": 0,
+      "alpha": 0,
+      "winRate": 0,
+      "volatility": 0,
+      "maxDrawdown": 0,
+      "sharpeRatio": 0,
+      "totalReturn": 0,
+      "profitFactor": 0,
+      "annualizedReturn": 0
+    },
+    "backtestResults": {
+      "avgWin": 0,
+      "avgLoss": 0,
+      "endDate": null,
+      "startDate": null,
+      "finalValue": 0,
+      "largestWin": 0,
+      "largestLoss": 0,
+      "totalTrades": 0,
+      "losingTrades": 0,
+      "winningTrades": 0,
+      "initialCapital": 0
+    },
+    "isActive": true,
+    "isPublic": false,
+    "tags": [
+      "dividend",
+      "income",
+      "conservative"
+    ],
+    "lastBacktest": null,
+    "lastUsed": null,
+    "usageCount": 0,
+    "rating": null,
+    "ratingCount": 0,
+    "createdAt": "2025-07-29T16:04:30.563Z",
+    "updatedAt": "2025-07-29T16:04:30.563Z",
+    "user": {
+      "username": "investor1",
+      "email": "investor1@trading.com"
+    }
+  },
+  {
+    "id": "6dd9c1b6-d916-4069-bc11-60ab14e25b64",
+    "userId": "3052390e-25b2-4e2a-8fce-97eba0717def",
+    "name": "AI Momentum Strategy",
+    "description": "AI-powered momentum trading strategy that identifies trending stocks using machine learning algorithms",
+    "type": "momentum",
+    "riskLevel": "medium",
+    "timeHorizon": "medium",
+    "parameters": [
+      {
+        "name": "momentumThreshold",
+        "value": 3,
+        "description": "AI-calculated momentum threshold"
+      },
+      {
+        "name": "confidenceLevel",
+        "value": 0.85,
+        "description": "AI confidence level for trades"
+      },
+      {
+        "name": "stopLoss",
+        "value": 4.5,
+        "description": "Dynamic stop loss percentage"
+      },
+      {
+        "name": "positionSize",
+        "value": 2.5,
+        "description": "AI-optimized position size"
+      }
+    ],
+    "rules": {
+      "exit": [],
+      "entry": [],
+      "riskManagement": []
+    },
+    "performance": 0,
+    "backtestResults": {
+      "avgWin": 0,
+      "avgLoss": 0,
+      "endDate": null,
+      "startDate": null,
+      "finalValue": 0,
+      "largestWin": 0,
+      "largestLoss": 0,
+      "totalTrades": 0,
+      "losingTrades": 0,
+      "winningTrades": 0,
+      "initialCapital": 0
+    },
+    "isActive": true,
+    "isPublic": false,
+    "tags": [],
+    "lastBacktest": null,
+    "lastUsed": null,
+    "usageCount": 0,
+    "rating": null,
+    "ratingCount": 0,
+    "createdAt": "2025-07-29T16:07:17.739Z",
+    "updatedAt": "2025-07-29T16:07:17.739Z",
+    "user": {
+      "username": "admin",
+      "email": "admin@trading.com"
+    }
+  },
+  {
+    "id": "d0ae5797-03d4-451e-bd32-d4ba8eb8c2d2",
+    "userId": "3052390e-25b2-4e2a-8fce-97eba0717def",
+    "name": "AI Momentum Strategy",
+    "description": "AI-powered momentum trading strategy that identifies trending stocks using machine learning algorithms",
+    "type": "momentum",
+    "riskLevel": "medium",
+    "timeHorizon": "medium",
+    "parameters": [
+      {
+        "name": "momentumThreshold",
+        "value": 3,
+        "description": "AI-calculated momentum threshold"
+      },
+      {
+        "name": "confidenceLevel",
+        "value": 0.85,
+        "description": "AI confidence level for trades"
+      },
+      {
+        "name": "stopLoss",
+        "value": 4.5,
+        "description": "Dynamic stop loss percentage"
+      },
+      {
+        "name": "positionSize",
+        "value": 2.5,
+        "description": "AI-optimized position size"
+      }
+    ],
+    "rules": {
+      "exit": [],
+      "entry": [],
+      "riskManagement": []
+    },
+    "performance": 0,
+    "backtestResults": {
+      "avgWin": 0,
+      "avgLoss": 0,
+      "endDate": null,
+      "startDate": null,
+      "finalValue": 0,
+      "largestWin": 0,
+      "largestLoss": 0,
+      "totalTrades": 0,
+      "losingTrades": 0,
+      "winningTrades": 0,
+      "initialCapital": 0
+    },
+    "isActive": true,
+    "isPublic": false,
+    "tags": [],
+    "lastBacktest": null,
+    "lastUsed": null,
+    "usageCount": 0,
+    "rating": null,
+    "ratingCount": 0,
+    "createdAt": "2025-07-29T16:08:42.432Z",
+    "updatedAt": "2025-07-29T16:08:42.432Z",
+    "user": {
+      "username": "admin",
+      "email": "admin@trading.com"
+    }
+  }
+]

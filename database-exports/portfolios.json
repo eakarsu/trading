@@ -1,0 +1,197 @@
+[
+  {
+    "id": "680202b3-2b33-44a1-88be-43276dbdba81",
+    "userId": "3052390e-25b2-4e2a-8fce-97eba0717def",
+    "name": "Growth Portfolio",
+    "description": "High-growth technology stocks",
+    "totalValue": "150000.00",
+    "cashBalance": "10000.00",
+    "totalReturn": "25000.00",
+    "totalReturnPercent": "20.0000",
+    "dayChange": "1500.00",
+    "dayChangePercent": "1.0000",
+    "holdings": [
+      {
+        "shares": 100,
+        "symbol": "AAPL",
+        "avgPrice": 150,
+        "currentPrice": 155
+      },
+      {
+        "shares": 50,
+        "symbol": "GOOGL",
+        "avgPrice": 2500,
+        "currentPrice": 2600
+      },
+      {
+        "shares": 25,
+        "symbol": "TSLA",
+        "avgPrice": 800,
+        "currentPrice": 850
+      }
+    ],
+    "riskProfile": "aggressive",
+    "strategy": "Growth Investing",
+    "isActive": true,
+    "lastRebalanced": null,
+    "performance": {
+      "ytd": 0,
+      "oneDay": 0,
+      "oneWeek": 0,
+      "oneYear": 0,
+      "oneMonth": 0,
+      "inception": 0,
+      "sixMonths": 0,
+      "threeMonths": 0
+    },
+    "allocation": {
+      "cash": 0,
+      "bonds": 0,
+      "other": 0,
+      "reits": 0,
+      "crypto": 0,
+      "stocks": 0,
+      "commodities": 0
+    },
+    "settings": {
+      "autoRebalance": false,
+      "taxOptimization": false,
+      "rebalanceThreshold": 5,
+      "dividendReinvestment": true
+    },
+    "createdAt": "2025-07-29T16:04:30.560Z",
+    "updatedAt": "2025-07-29T16:04:30.560Z",
+    "user": {
+      "username": "admin",
+      "email": "admin@trading.com"
+    }
+  },
+  {
+    "id": "1d19138e-d679-4949-b6c3-8de4af4ca635",
+    "userId": "684f930b-7c8e-4f3f-a0c7-c1e40d66cfb1",
+    "name": "Balanced Portfolio",
+    "description": "Diversified portfolio with moderate risk",
+    "totalValue": "75000.00",
+    "cashBalance": "5000.00",
+    "totalReturn": "8000.00",
+    "totalReturnPercent": "12.0000",
+    "dayChange": "300.00",
+    "dayChangePercent": "0.4000",
+    "holdings": [
+      {
+        "shares": 75,
+        "symbol": "MSFT",
+        "avgPrice": 300,
+        "currentPrice": 310
+      },
+      {
+        "shares": 30,
+        "symbol": "AMZN",
+        "avgPrice": 3200,
+        "currentPrice": 3300
+      },
+      {
+        "shares": 40,
+        "symbol": "NVDA",
+        "avgPrice": 400,
+        "currentPrice": 420
+      }
+    ],
+    "riskProfile": "moderate",
+    "strategy": "Balanced Investing",
+    "isActive": true,
+    "lastRebalanced": null,
+    "performance": {
+      "ytd": 0,
+      "oneDay": 0,
+      "oneWeek": 0,
+      "oneYear": 0,
+      "oneMonth": 0,
+      "inception": 0,
+      "sixMonths": 0,
+      "threeMonths": 0
+    },
+    "allocation": {
+      "cash": 0,
+      "bonds": 0,
+      "other": 0,
+      "reits": 0,
+      "crypto": 0,
+      "stocks": 0,
+      "commodities": 0
+    },
+    "settings": {
+      "autoRebalance": false,
+      "taxOptimization": false,
+      "rebalanceThreshold": 5,
+      "dividendReinvestment": true
+    },
+    "createdAt": "2025-07-29T16:04:30.560Z",
+    "updatedAt": "2025-07-29T16:04:30.560Z",
+    "user": {
+      "username": "trader1",
+      "email": "trader1@trading.com"
+    }
+  },
+  {
+    "id": "bde0c57e-22c4-40d2-bc69-1461e05b72bf",
+    "userId": "9205b6aa-fb37-4a95-a04e-6f7db79c82f6",
+    "name": "Conservative Portfolio",
+    "description": "Low-risk dividend-focused portfolio",
+    "totalValue": "50000.00",
+    "cashBalance": "8000.00",
+    "totalReturn": "3000.00",
+    "totalReturnPercent": "6.0000",
+    "dayChange": "100.00",
+    "dayChangePercent": "0.2000",
+    "holdings": [
+      {
+        "shares": 50,
+        "symbol": "AAPL",
+        "avgPrice": 150,
+        "currentPrice": 155
+      },
+      {
+        "shares": 40,
+        "symbol": "MSFT",
+        "avgPrice": 300,
+        "currentPrice": 310
+      }
+    ],
+    "riskProfile": "conservative",
+    "strategy": "Dividend Investing",
+    "isActive": true,
+    "lastRebalanced": null,
+    "performance": {
+      "ytd": 0,
+      "oneDay": 0,
+      "oneWeek": 0,
+      "oneYear": 0,
+      "oneMonth": 0,
+      "inception": 0,
+      "sixMonths": 0,
+      "threeMonths": 0
+    },
+    "allocation": {
+      "cash": 0,
+      "bonds": 0,
+      "other": 0,
+      "reits": 0,
+      "crypto": 0,
+      "stocks": 0,
+      "commodities": 0
+    },
+    "settings": {
+      "autoRebalance": false,
+      "taxOptimization": false,
+      "rebalanceThreshold": 5,
+      "dividendReinvestment": true
+    },
+    "createdAt": "2025-07-29T16:04:30.560Z",
+    "updatedAt": "2025-07-29T16:04:30.560Z",
+    "user": {
+      "username": "investor1",
+      "email": "investor1@trading.com"
+    }
+  }
+]

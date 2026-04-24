@@ -1,0 +1,226 @@
+[
+  {
+    "id": "cefdcdb7-511a-4c6d-9bdd-52f3c46a9381",
+    "userId": "3052390e-25b2-4e2a-8fce-97eba0717def",
+    "symbol": "AAPL",
+    "analysisType": "comprehensive",
+    "timeframe": "1d",
+    "currentPrice": "155.50",
+    "priceChange": "2.50",
+    "priceChangePercent": "1.6300",
+    "volume": "45000000",
+    "avgVolume": "42000000",
+    "technicalAnalysis": {
+      "trend": "bullish",
+      "signals": [
+        "Golden cross on MACD",
+        "Breaking resistance at 155"
+      ],
+      "support": [
+        150,
+        145
+      ],
+      "indicators": {
+        "rsi": 65,
+        "macd": 2.5,
+        "bollinger": {
+          "lower": 150,
+          "upper": 160,
+          "middle": 155
+        }
+      },
+      "resistance": [
+        160,
+        165
+      ]
+    },
+    "fundamentalAnalysis": {
+      "pe": 28.5,
+      "eps": 5.45,
+      "roe": 147.4,
+      "revenue": 394000000000,
+      "profitMargin": 25.3,
+      "revenueGrowth": 8.2
+    },
+    "sentimentAnalysis": {
+      "news": {
+        "score": null,
+        "articles": [],
+        "keywords": []
+      },
+      "social": {
+        "score": null,
+        "mentions": 0,
+        "trending": false,
+        "sentiment": null
+      },
+      "analyst": {
+        "rating": null,
+        "targetPrice": null,
+        "recommendations": {
+          "buy": 0,
+          "hold": 0,
+          "sell": 0
+        }
+      },
+      "overall": null,
+      "institutional": {
+        "flow": null,
+        "changes": [],
+        "ownership": null
+      }
+    },
+    "riskAnalysis": {
+      "var": null,
+      "beta": null,
+      "riskScore": null,
+      "volatility": null,
+      "maxDrawdown": null,
+      "riskFactors": [],
+      "sharpeRatio": null,
+      "correlations": {}
+    },
+    "recommendation": "buy",
+    "confidence": "78.50",
+    "targetPrice": "170.00",
+    "stopLoss": "145.00",
+    "timeHorizon": "medium",
+    "keyPoints": [
+      "Strong quarterly earnings beat expectations",
+      "iPhone sales showing resilience",
+      "Services revenue growing steadily"
+    ],
+    "risks": [],
+    "opportunities": [],
+    "summary": "Apple shows strong fundamentals with growing services revenue and resilient iPhone sales. Technical indicators suggest continued upward momentum.",
+    "isPublic": true,
+    "tags": [
+      "technology",
+      "large-cap",
+      "growth"
+    ],
+    "metadata": null,
+    "createdAt": "2025-07-29T16:04:30.568Z",
+    "updatedAt": "2025-07-29T16:04:30.568Z",
+    "user": {
+      "username": "admin",
+      "email": "admin@trading.com"
+    }
+  },
+  {
+    "id": "bb55dc89-4104-4617-aa59-30ed257b7c08",
+    "userId": "684f930b-7c8e-4f3f-a0c7-c1e40d66cfb1",
+    "symbol": "TSLA",
+    "analysisType": "technical",
+    "timeframe": "1w",
+    "currentPrice": "850.00",
+    "priceChange": "-15.50",
+    "priceChangePercent": "-1.7900",
+    "volume": "28000000",
+    "avgVolume": "25000000",
+    "technicalAnalysis": {
+      "trend": "bearish",
+      "signals": [
+        "Death cross forming",
+        "Breaking below 50-day MA"
+      ],
+      "support": [
+        800,
+        750
+      ],
+      "indicators": {
+        "rsi": 42,
+        "macd": -8.2,
+        "bollinger": {
+          "lower": 800,
+          "upper": 900,
+          "middle": 850
+        }
+      },
+      "resistance": [
+        900,
+        950
+      ]
+    },
+    "fundamentalAnalysis": {
+      "pe": null,
+      "eps": null,
+      "roa": null,
+      "roe": null,
+      "revenue": null,
+      "bookValue": null,
+      "quickRatio": null,
+      "payoutRatio": null,
+      "priceToBook": null,
+      "currentRatio": null,
+      "debtToEquity": null,
+      "profitMargin": null,
+      "dividendYield": null,
+      "revenueGrowth": null
+    },
+    "sentimentAnalysis": {
+      "news": {
+        "score": null,
+        "articles": [],
+        "keywords": []
+      },
+      "social": {
+        "score": null,
+        "mentions": 0,
+        "trending": false,
+        "sentiment": null
+      },
+      "analyst": {
+        "rating": null,
+        "targetPrice": null,
+        "recommendations": {
+          "buy": 0,
+          "hold": 0,
+          "sell": 0
+        }
+      },
+      "overall": null,
+      "institutional": {
+        "flow": null,
+        "changes": [],
+        "ownership": null
+      }
+    },
+    "riskAnalysis": {
+      "var": null,
+      "beta": null,
+      "riskScore": null,
+      "volatility": null,
+      "maxDrawdown": null,
+      "riskFactors": [],
+      "sharpeRatio": null,
+      "correlations": {}
+    },
+    "recommendation": "hold",
+    "confidence": "65.20",
+    "targetPrice": "800.00",
+    "stopLoss": "750.00",
+    "timeHorizon": "short",
+    "keyPoints": [
+      "Technical indicators showing weakness",
+      "High volatility continues",
+      "Support level at $800 critical"
+    ],
+    "risks": [],
+    "opportunities": [],
+    "summary": "Tesla showing technical weakness with bearish signals. Watch for support at $800 level.",
+    "isPublic": false,
+    "tags": [
+      "electric-vehicles",
+      "high-volatility",
+      "growth"
+    ],
+    "metadata": null,
+    "createdAt": "2025-07-29T16:04:30.568Z",
+    "updatedAt": "2025-07-29T16:04:30.568Z",
+    "user": {
+      "username": "trader1",
+      "email": "trader1@trading.com"
+    }
+  }
+]

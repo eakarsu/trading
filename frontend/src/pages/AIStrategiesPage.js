@@ -20,19 +20,30 @@ const AIStrategiesPage = () => {
     riskLevel: 'medium'
   });
 
+  // Detail modal state
+  const [selectedStrategy, setSelectedStrategy] = useState(null);
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editForm, setEditForm] = useState({
+    name: '',
+    description: '',
+    type: '',
+    riskLevel: 'medium'
+  });
+
   useEffect(() => {
     // Fetch real strategies data from API
     const fetchStrategies = async () => {
       try {
         setLoading(true);
-        
+
         // Fetch strategies, optimizations, and backtest results in parallel
         const [strategiesData, optimizationsData, backtestData] = await Promise.all([
           strategyAPI.getAllStrategies(),
           strategyAPI.getOptimizations(),
           strategyAPI.getBacktestResults()
         ]);
-        
+
         // Transform the data to match the expected structure
         const transformedData = {
           generator: {
@@ -40,10 +51,14 @@ const AIStrategiesPage = () => {
               id: strategy.id || strategy._id,
               name: strategy.name,
               description: strategy.description,
+              type: strategy.type,
               risk: strategy.riskLevel,
               performance: strategy.performance,
               winRate: strategy.winRate,
-              status: strategy.status
+              status: strategy.status,
+              tags: strategy.tags,
+              createdAt: strategy.createdAt,
+              updatedAt: strategy.updatedAt
             }))
           },
           optimizer: {
@@ -53,7 +68,7 @@ const AIStrategiesPage = () => {
             results: backtestData || []
           }
         };
-        
+
         setStrategies(transformedData);
       } catch (err) {
         console.error('Failed to fetch strategies data', err);
@@ -84,26 +99,28 @@ const AIStrategiesPage = () => {
         performance: 0,
         winRate: 0
       };
-      
+
       const createdStrategy = await strategyAPI.createStrategy(strategyData);
-      
+
       // Update the local state with the new strategy
       const updatedStrategies = {...strategies};
       updatedStrategies.generator.strategies.push({
         id: createdStrategy._id,
         name: createdStrategy.name,
         description: createdStrategy.description,
+        type: createdStrategy.type,
         risk: createdStrategy.riskLevel,
         performance: createdStrategy.performance,
         winRate: createdStrategy.winRate,
-        status: createdStrategy.status
+        status: createdStrategy.status,
+        tags: createdStrategy.tags
       });
       setStrategies(updatedStrategies);
-      
+
       // Reset form and hide it
       setNewStrategy({ name: '', description: '', type: '', riskLevel: 'medium' });
       setShowCreateForm(false);
-      
+
       alert('Strategy created successfully!');
     } catch (error) {
       console.error('Failed to create strategy:', error);
@@ -114,12 +131,12 @@ const AIStrategiesPage = () => {
   const handleDeleteStrategy = async (strategyId) => {
     try {
       await strategyAPI.deleteStrategy(strategyId);
-      
+
       // Update the local state by removing the deleted strategy
       const updatedStrategies = {...strategies};
       updatedStrategies.generator.strategies = updatedStrategies.generator.strategies.filter(s => s.id !== strategyId);
       setStrategies(updatedStrategies);
-      
+
       alert('Strategy deleted successfully!');
     } catch (error) {
       console.error('Failed to delete strategy:', error);
@@ -130,7 +147,7 @@ const AIStrategiesPage = () => {
   const handleDeactivateStrategy = async (strategyId) => {
     try {
       await strategyAPI.deactivateStrategy(strategyId);
-      
+
       // Update the strategy status in the local state
       const updatedStrategies = {...strategies};
       const strategyIndex = updatedStrategies.generator.strategies.findIndex(s => s.id === strategyId);
@@ -138,11 +155,108 @@ const AIStrategiesPage = () => {
         updatedStrategies.generator.strategies[strategyIndex].status = 'inactive';
         setStrategies(updatedStrategies);
       }
-      
+
       alert('Strategy deactivated successfully!');
     } catch (error) {
       console.error('Failed to deactivate strategy:', error);
       alert('Failed to deactivate strategy. Please try again.');
+    }
+  };
+
+  // Open the detail modal when a strategy card is clicked
+  const handleCardClick = (strategy) => {
+    setSelectedStrategy(strategy);
+    setShowDetailModal(true);
+    setIsEditing(false);
+  };
+
+  // Close the detail modal
+  const handleCloseDetailModal = () => {
+    setShowDetailModal(false);
+    setSelectedStrategy(null);
+    setIsEditing(false);
+  };
+
+  // Enter edit mode in the detail modal
+  const handleStartEdit = () => {
+    if (selectedStrategy) {
+      setEditForm({
+        name: selectedStrategy.name || '',
+        description: selectedStrategy.description || '',
+        type: selectedStrategy.type || '',
+        riskLevel: selectedStrategy.risk || 'medium'
+      });
+      setIsEditing(true);
+    }
+  };
+
+  // Cancel editing
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+  };
+
+  // Save edits
+  const handleSaveEdit = async () => {
+    if (!selectedStrategy) return;
+    try {
+      const updatedData = {
+        name: editForm.name,
+        description: editForm.description,
+        type: editForm.type,
+        riskLevel: editForm.riskLevel
+      };
+      await strategyAPI.updateStrategy(selectedStrategy.id, updatedData);
+
+      // Update local state
+      const updatedStrategies = { ...strategies };
+      const idx = updatedStrategies.generator.strategies.findIndex(s => s.id === selectedStrategy.id);
+      if (idx !== -1) {
+        updatedStrategies.generator.strategies[idx] = {
+          ...updatedStrategies.generator.strategies[idx],
+          name: editForm.name,
+          description: editForm.description,
+          type: editForm.type,
+          risk: editForm.riskLevel
+        };
+        setStrategies(updatedStrategies);
+        setSelectedStrategy({
+          ...selectedStrategy,
+          name: editForm.name,
+          description: editForm.description,
+          type: editForm.type,
+          risk: editForm.riskLevel
+        });
+      }
+
+      setIsEditing(false);
+      alert('Strategy updated successfully!');
+    } catch (error) {
+      console.error('Failed to update strategy:', error);
+      alert('Failed to update strategy. Please try again.');
+    }
+  };
+
+  // Delete from the detail modal
+  const handleDeleteFromModal = async () => {
+    if (!selectedStrategy) return;
+    if (window.confirm(`Are you sure you want to delete the strategy "${selectedStrategy.name}"?`)) {
+      try {
+        await strategyAPI.deleteStrategy(selectedStrategy.id);
+
+        // Remove from local state
+        const updatedStrategies = { ...strategies };
+        updatedStrategies.generator.strategies = updatedStrategies.generator.strategies.filter(
+          s => s.id !== selectedStrategy.id
+        );
+        setStrategies(updatedStrategies);
+
+        // Close the modal
+        handleCloseDetailModal();
+        alert('Strategy deleted successfully!');
+      } catch (error) {
+        console.error('Failed to delete strategy:', error);
+        alert('Failed to delete strategy. Please try again.');
+      }
     }
   };
 
@@ -176,10 +290,12 @@ const AIStrategiesPage = () => {
                     id: newStrategy._id,
                     name: newStrategy.name,
                     description: newStrategy.description,
+                    type: newStrategy.type,
                     risk: newStrategy.riskLevel,
                     performance: newStrategy.performance,
                     winRate: newStrategy.winRate,
-                    status: newStrategy.status
+                    status: newStrategy.status,
+                    tags: newStrategy.tags
                   });
                   setStrategies(updatedStrategies);
                   alert('New AI strategy generated successfully!');
@@ -200,19 +316,19 @@ const AIStrategiesPage = () => {
                 setLoading(true);
                 // Get the first active strategy to optimize, or show selection dialog
                 const activeStrategies = strategies.generator.strategies.filter(s => s.status === 'Active');
-                
+
                 if (activeStrategies.length === 0) {
                   alert('No active strategies found to optimize. Please activate a strategy first.');
                   return;
                 }
-                
+
                 // For now, optimize the first active strategy
                 const strategyToOptimize = activeStrategies[0];
-                const optimizationResult = await strategyAPI.optimizeStrategy({ 
+                const optimizationResult = await strategyAPI.optimizeStrategy({
                   strategyId: strategyToOptimize.id,
-                  parameters: ['riskLevel', 'performance'] 
+                  parameters: ['riskLevel', 'performance']
                 });
-                
+
                 if (optimizationResult) {
                   alert(`Strategy "${strategyToOptimize.name}" optimization completed successfully!`);
                 } else {
@@ -229,7 +345,7 @@ const AIStrategiesPage = () => {
             </button>
           </div>
         </div>
-        
+
         {showCreateForm && (
           <div className="modal">
             <div className="modal-content">
@@ -286,34 +402,178 @@ const AIStrategiesPage = () => {
             </div>
           </div>
         )}
-        
+
+        {/* Detail Modal */}
+        {showDetailModal && selectedStrategy && (
+          <div className="detail-modal-overlay" onClick={handleCloseDetailModal}>
+            <div className="detail-modal" onClick={(e) => e.stopPropagation()}>
+              <div className="detail-modal-header">
+                <h2>{isEditing ? 'Edit Strategy' : selectedStrategy.name}</h2>
+                <button className="detail-modal-close" onClick={handleCloseDetailModal}>
+                  &times;
+                </button>
+              </div>
+
+              {isEditing ? (
+                /* ---- Inline Edit Form ---- */
+                <div className="detail-modal-body">
+                  <div className="detail-edit-form">
+                    <div className="form-group">
+                      <label htmlFor="edit-name">Name</label>
+                      <input
+                        type="text"
+                        id="edit-name"
+                        value={editForm.name}
+                        onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                        placeholder="Strategy name"
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="edit-description">Description</label>
+                      <textarea
+                        id="edit-description"
+                        value={editForm.description}
+                        onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+                        placeholder="Strategy description"
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="edit-type">Type</label>
+                      <input
+                        type="text"
+                        id="edit-type"
+                        value={editForm.type}
+                        onChange={(e) => setEditForm({ ...editForm, type: e.target.value })}
+                        placeholder="Strategy type"
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="edit-riskLevel">Risk Level</label>
+                      <select
+                        id="edit-riskLevel"
+                        value={editForm.riskLevel}
+                        onChange={(e) => setEditForm({ ...editForm, riskLevel: e.target.value })}
+                      >
+                        <option value="low">Low</option>
+                        <option value="medium">Medium</option>
+                        <option value="high">High</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div className="detail-modal-actions">
+                    <button className="btn btn-primary" onClick={handleSaveEdit}>
+                      Save Changes
+                    </button>
+                    <button className="btn btn-outline" onClick={handleCancelEdit}>
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                /* ---- Read-Only Detail View ---- */
+                <div className="detail-modal-body">
+                  <div className="detail-fields">
+                    <div className="detail-field">
+                      <span className="detail-label">Status</span>
+                      <span className={`detail-value detail-status ${selectedStrategy.status ? selectedStrategy.status.toLowerCase() : 'inactive'}`}>
+                        {selectedStrategy.status || 'Inactive'}
+                      </span>
+                    </div>
+                    <div className="detail-field">
+                      <span className="detail-label">Description</span>
+                      <span className="detail-value">{selectedStrategy.description || 'No description'}</span>
+                    </div>
+                    <div className="detail-field">
+                      <span className="detail-label">Type</span>
+                      <span className="detail-value">{selectedStrategy.type || 'N/A'}</span>
+                    </div>
+                    <div className="detail-field">
+                      <span className="detail-label">Risk Level</span>
+                      <span className={`detail-value risk-${selectedStrategy.risk ? selectedStrategy.risk.toLowerCase() : 'medium'}`}>
+                        {selectedStrategy.risk || 'Medium'}
+                      </span>
+                    </div>
+                    <div className="detail-field">
+                      <span className="detail-label">Performance</span>
+                      <span className={`detail-value ${selectedStrategy.performance >= 0 ? 'positive' : 'negative'}`}>
+                        {formatPercent(selectedStrategy.performance)}
+                      </span>
+                    </div>
+                    <div className="detail-field">
+                      <span className="detail-label">Win Rate</span>
+                      <span className="detail-value">{selectedStrategy.winRate != null ? `${selectedStrategy.winRate}%` : 'N/A'}</span>
+                    </div>
+                    {selectedStrategy.tags && selectedStrategy.tags.length > 0 && (
+                      <div className="detail-field">
+                        <span className="detail-label">Tags</span>
+                        <span className="detail-value detail-tags">
+                          {selectedStrategy.tags.map((tag, i) => (
+                            <span className="detail-tag" key={i}>{tag}</span>
+                          ))}
+                        </span>
+                      </div>
+                    )}
+                    {selectedStrategy.createdAt && (
+                      <div className="detail-field">
+                        <span className="detail-label">Created</span>
+                        <span className="detail-value">{new Date(selectedStrategy.createdAt).toLocaleString()}</span>
+                      </div>
+                    )}
+                    {selectedStrategy.updatedAt && (
+                      <div className="detail-field">
+                        <span className="detail-label">Updated</span>
+                        <span className="detail-value">{new Date(selectedStrategy.updatedAt).toLocaleString()}</span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="detail-modal-actions">
+                    <button className="btn btn-primary" onClick={handleStartEdit}>
+                      Edit
+                    </button>
+                    <button className="btn btn-danger" onClick={handleDeleteFromModal}>
+                      Delete
+                    </button>
+                    <button className="btn btn-outline" onClick={handleCloseDetailModal}>
+                      Close
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
         <div className="tabs">
-          <button 
+          <button
             className={`tab ${activeTab === 'generator' ? 'active' : ''}`}
             onClick={() => setActiveTab('generator')}
           >
             Strategy Generator
           </button>
-          <button 
+          <button
             className={`tab ${activeTab === 'optimizer' ? 'active' : ''}`}
             onClick={() => setActiveTab('optimizer')}
           >
             Strategy Optimizer
           </button>
-          <button 
+          <button
             className={`tab ${activeTab === 'backtester' ? 'active' : ''}`}
             onClick={() => setActiveTab('backtester')}
           >
             Backtesting
           </button>
         </div>
-        
+
         {activeTab === 'generator' && (
           <div className="tab-content">
             <h2>AI-Generated Strategies</h2>
             <div className="strategies-grid">
               {strategies.generator.strategies.map((strategy) => (
-                <div className="strategy-card" key={strategy.id}>
+                <div
+                  className="strategy-card strategy-card-clickable"
+                  key={strategy.id}
+                  onClick={() => handleCardClick(strategy)}
+                >
                   <div className="strategy-header">
                     <h3>{strategy.name}</h3>
                     <div className={`strategy-status ${strategy.status ? strategy.status.toLowerCase() : 'inactive'}`}>
@@ -341,7 +601,7 @@ const AIStrategiesPage = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="strategy-actions">
+                  <div className="strategy-actions" onClick={(e) => e.stopPropagation()}>
                     <button className="btn btn-outline" onClick={() => {
                       navigate(`/strategies/${strategy.id}`);
                     }}>
@@ -409,7 +669,7 @@ const AIStrategiesPage = () => {
             </div>
           </div>
         )}
-        
+
         {activeTab === 'optimizer' && (
           <div className="tab-content">
             <h2>Strategy Optimizations</h2>
@@ -449,7 +709,7 @@ const AIStrategiesPage = () => {
             </div>
           </div>
         )}
-        
+
         {activeTab === 'backtester' && (
           <div className="tab-content">
             <h2>Backtesting Results</h2>

@@ -1,0 +1,23 @@
+[
+  {
+    "id": "684f930b-7c8e-4f3f-a0c7-c1e40d66cfb1",
+    "username": "trader1",
+    "email": "trader1@trading.com",
+    "createdAt": "2025-07-29T16:04:30.424Z",
+    "updatedAt": "2025-07-29T16:04:30.424Z"
+  },
+  {
+    "id": "9205b6aa-fb37-4a95-a04e-6f7db79c82f6",
+    "username": "investor1",
+    "email": "investor1@trading.com",
+    "createdAt": "2025-07-29T16:04:30.490Z",
+    "updatedAt": "2025-07-29T16:04:30.490Z"
+  },
+  {
+    "id": "3052390e-25b2-4e2a-8fce-97eba0717def",
+    "username": "admin",
+    "email": "admin@trading.com",
+    "createdAt": "2025-07-29T16:04:30.340Z",
+    "updatedAt": "2025-07-29T16:17:15.887Z"
+  }
+]

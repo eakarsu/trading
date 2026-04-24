@@ -658,3 +658,192 @@
     transform: translateY(0);
   }
 }
+
+/* ================================================================
+   CLICKABLE CARDS & ROWS
+   ================================================================ */
+.summary-card.clickable {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.summary-card.clickable:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-xl);
+  border-color: var(--brand-primary);
+}
+
+.clickable-row {
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border-radius: var(--radius-lg);
+  padding: var(--space-3) var(--space-4);
+}
+
+.clickable-row:hover {
+  background: rgba(59, 130, 246, 0.08);
+  transform: translateX(4px);
+}
+
+/* ================================================================
+   DETAIL MODAL
+   ================================================================ */
+.detail-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.detail-modal {
+  background: var(--bg-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-2xl);
+  width: 90%;
+  max-width: 520px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-xl);
+  animation: slideUp 0.25s ease;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.detail-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-6);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.detail-modal-header h2 {
+  font-size: var(--text-lg);
+  font-weight: var(--font-bold);
+  color: var(--text-primary);
+  margin: 0;
+  border: none;
+  padding: 0;
+}
+
+.detail-modal-header h2::before {
+  display: none;
+}
+
+.detail-modal-close {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+.detail-modal-close:hover {
+  color: var(--text-primary);
+}
+
+.detail-modal-body {
+  padding: var(--space-6);
+}
+
+.detail-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-3) var(--space-4);
+  background: var(--glass-bg);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+}
+
+.detail-label {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  font-weight: var(--font-medium);
+}
+
+.detail-value {
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+  font-weight: var(--font-semibold);
+  font-family: var(--font-mono);
+}
+
+.detail-value.positive {
+  color: var(--profit);
+}
+
+.detail-value.negative {
+  color: var(--loss);
+}
+
+.detail-modal-footer {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-6);
+  border-top: 1px solid var(--border-subtle);
+  justify-content: flex-end;
+}
+
+.detail-modal-footer .btn {
+  padding: var(--space-3) var(--space-5);
+  border-radius: var(--radius-lg);
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  cursor: pointer;
+  border: none;
+  transition: all 0.15s ease;
+}
+
+.detail-modal-footer .btn-primary {
+  background: var(--brand-primary);
+  color: white;
+}
+
+.detail-modal-footer .btn-primary:hover {
+  opacity: 0.9;
+}
+
+.detail-modal-footer .btn-danger {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--loss);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.detail-modal-footer .btn-danger:hover {
+  background: rgba(239, 68, 68, 0.25);
+}
+
+.detail-modal-footer .btn-secondary {
+  background: var(--glass-bg);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-default);
+}
+
+.detail-modal-footer .btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.08);
+}

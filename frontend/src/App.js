@@ -17,6 +17,13 @@ import TradeHistoryPage from './pages/TradeHistoryPage';
 import AlertsPage from './pages/AlertsPage';
 import AnalyticsPage from './pages/AnalyticsPage';
 import ChartsPage from './pages/ChartsPage';
+import PortfolioPage from './pages/PortfolioPage';
+import MarketAnalysisPage from './pages/MarketAnalysisPage';
+import PredictionsPage from './pages/PredictionsPage';
+import AIStrategiesPage from './pages/AIStrategiesPage';
+import StockPicksPage from './pages/StockPicksPage';
+import TradingAssistantPage from './pages/TradingAssistantPage';
+import ProfilePage from './pages/ProfilePage';
 
 function App() {
   return (
@@ -34,6 +41,16 @@ function App() {
             element={
               <ProtectedRoute>
                 <DashboardPage />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Protected Routes - Portfolio */}
+          <Route
+            path="/portfolio"
+            element={
+              <ProtectedRoute>
+                <PortfolioPage />
               </ProtectedRoute>
             }
           />
@@ -66,6 +83,16 @@ function App() {
             }
           />
 
+          {/* Protected Routes - AI Strategies */}
+          <Route
+            path="/ai-strategies"
+            element={
+              <ProtectedRoute>
+                <AIStrategiesPage />
+              </ProtectedRoute>
+            }
+          />
+
           {/* Protected Routes - Auto Trading */}
           <Route
             path="/auto-trading"
@@ -80,6 +107,40 @@ function App() {
             element={
               <ProtectedRoute>
                 <StrategyOptimizerPage />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Protected Routes - AI & Analysis */}
+          <Route
+            path="/market-analysis"
+            element={
+              <ProtectedRoute>
+                <MarketAnalysisPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/predictions"
+            element={
+              <ProtectedRoute>
+                <PredictionsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/stock-picks"
+            element={
+              <ProtectedRoute>
+                <StockPicksPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/trading-assistant"
+            element={
+              <ProtectedRoute>
+                <TradingAssistantPage />
               </ProtectedRoute>
             }
           />
@@ -114,6 +175,16 @@ function App() {
             element={
               <ProtectedRoute>
                 <ChartsPage />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Protected Routes - Profile */}
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <ProfilePage />
               </ProtectedRoute>
             }
           />

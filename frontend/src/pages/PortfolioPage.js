@@ -12,6 +12,8 @@ const PortfolioPage = () => {
   const [modalType, setModalType] = useState(''); // 'buy', 'sell', 'transfer', 'create', 'edit', 'delete'
   const [selectedSymbol, setSelectedSymbol] = useState('');
   const [portfolioId, setPortfolioId] = useState(null);
+  const [selectedHolding, setSelectedHolding] = useState(null);
+  const [showDetailModal, setShowDetailModal] = useState(false);
   const [formData, setFormData] = useState({
     symbol: '',
     name: '',
@@ -55,7 +57,7 @@ const PortfolioPage = () => {
           alert('No portfolio to delete.');
           return;
         }
-        
+
         const result = await portfolioAPI.deletePortfolio(portfolioId);
         if (result) {
           setPortfolio(null);
@@ -71,6 +73,50 @@ const PortfolioPage = () => {
     }
   };
 
+  // Handler for clicking a holding row to open the detail modal
+  const handleHoldingClick = (holding) => {
+    setSelectedHolding(holding);
+    setShowDetailModal(true);
+  };
+
+  // Handler for Edit button inside the detail modal
+  // Opens the Buy modal pre-populated with the selected holding's symbol
+  const handleDetailEdit = () => {
+    if (selectedHolding) {
+      setFormData({
+        symbol: selectedHolding.symbol,
+        name: selectedHolding.name,
+        shares: '',
+        price: selectedHolding.currentPrice ? String(selectedHolding.currentPrice) : '',
+        amount: '',
+        fromAccount: '',
+        toAccount: ''
+      });
+      setShowDetailModal(false);
+      setModalType('buy');
+      setShowModal(true);
+    }
+  };
+
+  // Handler for Delete/Sell button inside the detail modal
+  // Opens the Sell modal pre-populated with the selected holding
+  const handleDetailSell = () => {
+    if (selectedHolding) {
+      setFormData({
+        symbol: selectedHolding.symbol,
+        name: selectedHolding.name || '',
+        shares: selectedHolding.shares ? String(selectedHolding.shares) : '',
+        price: selectedHolding.currentPrice ? String(selectedHolding.currentPrice) : '',
+        amount: '',
+        fromAccount: '',
+        toAccount: ''
+      });
+      setShowDetailModal(false);
+      setModalType('sell');
+      setShowModal(true);
+    }
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -81,7 +127,7 @@ const PortfolioPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     try {
       let result;
       switch (modalType) {
@@ -159,15 +205,15 @@ const PortfolioPage = () => {
           result = { success: true };
           break;
       }
-      
+
       // Check if operation was successful
       if (!result) {
         throw new Error(`${modalType} operation failed`);
       }
-      
+
       // Refresh portfolio data
       await fetchPortfolio();
-      
+
       // Close modal and reset form
       setShowModal(false);
       setFormData({
@@ -179,7 +225,7 @@ const PortfolioPage = () => {
         fromAccount: '',
         toAccount: ''
       });
-      
+
       alert(`${modalType.charAt(0).toUpperCase() + modalType.slice(1)} operation completed successfully`);
     } catch (err) {
       console.error(`Failed to ${modalType}:`, err);
@@ -265,20 +311,20 @@ const PortfolioPage = () => {
             <button className="btn btn-danger" onClick={handleDeletePortfolio}>Delete</button>
           </div>
         </div>
-        
+
         {/* Modal for Buy/Sell/Transfer/Create/Edit */}
         {showModal && (
           <div className="modal-overlay" onClick={() => setShowModal(false)}>
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
               <div className="modal-header">
                 <h2>
-                  {modalType === 'buy' ? 'Buy Securities' : 
-                   modalType === 'sell' ? 'Sell Securities' : 
+                  {modalType === 'buy' ? 'Buy Securities' :
+                   modalType === 'sell' ? 'Sell Securities' :
                    modalType === 'transfer' ? 'Transfer Funds' :
                    modalType === 'create' ? 'Create Portfolio' :
                    'Edit Portfolio'}
                 </h2>
-                <button className="modal-close" onClick={() => setShowModal(false)}>×</button>
+                <button className="modal-close" onClick={() => setShowModal(false)}>&times;</button>
               </div>
               <form onSubmit={handleSubmit}>
                 <div className="modal-body">
@@ -286,57 +332,57 @@ const PortfolioPage = () => {
                     <div className="transaction-form">
                       <div className="form-group">
                         <label>Symbol</label>
-                        <input 
-                          type="text" 
+                        <input
+                          type="text"
                           name="symbol"
                           value={formData.symbol}
                           onChange={handleInputChange}
-                          placeholder="Enter stock symbol (e.g. AAPL)" 
+                          placeholder="Enter stock symbol (e.g. AAPL)"
                           required
                         />
                       </div>
                       <div className="form-group">
                         <label>Name</label>
-                        <input 
-                          type="text" 
+                        <input
+                          type="text"
                           name="name"
                           value={formData.name}
                           onChange={handleInputChange}
-                          placeholder="Enter company name" 
+                          placeholder="Enter company name"
                           required
                         />
                       </div>
                       <div className="form-group">
                         <label>Quantity</label>
-                        <input 
-                          type="number" 
+                        <input
+                          type="number"
                           name="shares"
                           value={formData.shares}
                           onChange={handleInputChange}
-                          placeholder="Enter number of shares" 
+                          placeholder="Enter number of shares"
                           required
                         />
                       </div>
                       <div className="form-group">
                         <label>Price</label>
-                        <input 
-                          type="number" 
+                        <input
+                          type="number"
                           name="price"
                           value={formData.price}
                           onChange={handleInputChange}
-                          placeholder="Enter price per share" 
+                          placeholder="Enter price per share"
                           step="0.01"
                           required
                         />
                       </div>
                     </div>
                   )}
-                  
+
                   {modalType === 'sell' && (
                     <div className="transaction-form">
                       <div className="form-group">
                         <label>Symbol</label>
-                        <select 
+                        <select
                           name="symbol"
                           value={formData.symbol}
                           onChange={handleInputChange}
@@ -352,35 +398,35 @@ const PortfolioPage = () => {
                       </div>
                       <div className="form-group">
                         <label>Quantity</label>
-                        <input 
-                          type="number" 
+                        <input
+                          type="number"
                           name="shares"
                           value={formData.shares}
                           onChange={handleInputChange}
-                          placeholder="Enter number of shares" 
+                          placeholder="Enter number of shares"
                           required
                         />
                       </div>
                       <div className="form-group">
                         <label>Price</label>
-                        <input 
-                          type="number" 
+                        <input
+                          type="number"
                           name="price"
                           value={formData.price}
                           onChange={handleInputChange}
-                          placeholder="Enter price per share" 
+                          placeholder="Enter price per share"
                           step="0.01"
                           required
                         />
                       </div>
                     </div>
                   )}
-                  
+
                   {modalType === 'transfer' && (
                     <div className="transaction-form">
                       <div className="form-group">
                         <label>From Account</label>
-                        <select 
+                        <select
                           name="fromAccount"
                           value={formData.fromAccount}
                           onChange={handleInputChange}
@@ -394,7 +440,7 @@ const PortfolioPage = () => {
                       </div>
                       <div className="form-group">
                         <label>To Account</label>
-                        <select 
+                        <select
                           name="toAccount"
                           value={formData.toAccount}
                           onChange={handleInputChange}
@@ -408,43 +454,43 @@ const PortfolioPage = () => {
                       </div>
                       <div className="form-group">
                         <label>Amount</label>
-                        <input 
-                          type="number" 
+                        <input
+                          type="number"
                           name="amount"
                           value={formData.amount}
                           onChange={handleInputChange}
-                          placeholder="Enter transfer amount" 
+                          placeholder="Enter transfer amount"
                           step="0.01"
                           required
                         />
                       </div>
                     </div>
                   )}
-                  
+
                   {(modalType === 'create' || modalType === 'edit') && (
                     <div className="transaction-form">
                       <p>
-                        {modalType === 'create' 
-                          ? 'Create a new portfolio to start tracking your investments.' 
+                        {modalType === 'create'
+                          ? 'Create a new portfolio to start tracking your investments.'
                           : 'Edit your portfolio details.'}
                       </p>
                     </div>
                   )}
                 </div>
                 <div className="modal-footer">
-                  <button 
-                    type="button" 
-                    className="btn btn-outline" 
+                  <button
+                    type="button"
+                    className="btn btn-outline"
                     onClick={() => setShowModal(false)}
                   >
                     Cancel
                   </button>
-                  <button 
-                    type="submit" 
+                  <button
+                    type="submit"
                     className="btn btn-primary"
                   >
-                    {modalType === 'buy' ? 'Buy' : 
-                     modalType === 'sell' ? 'Sell' : 
+                    {modalType === 'buy' ? 'Buy' :
+                     modalType === 'sell' ? 'Sell' :
                      modalType === 'transfer' ? 'Transfer' :
                      modalType === 'create' ? 'Create' :
                      'Update'}
@@ -454,7 +500,78 @@ const PortfolioPage = () => {
             </div>
           </div>
         )}
-        
+
+        {/* Holding Detail Modal */}
+        {showDetailModal && selectedHolding && (
+          <div className="modal-overlay" onClick={() => setShowDetailModal(false)}>
+            <div className="modal-content detail-modal" onClick={(e) => e.stopPropagation()}>
+              <div className="modal-header">
+                <h2>Holding Details</h2>
+                <button className="modal-close" onClick={() => setShowDetailModal(false)}>&times;</button>
+              </div>
+              <div className="modal-body">
+                <div className="detail-symbol-header">
+                  <span className="detail-symbol">{selectedHolding.symbol}</span>
+                  <span className="detail-name">{selectedHolding.name}</span>
+                </div>
+                <div className="detail-grid">
+                  <div className="detail-item">
+                    <span className="detail-label">Shares</span>
+                    <span className="detail-value">{selectedHolding.shares}</span>
+                  </div>
+                  <div className="detail-item">
+                    <span className="detail-label">Avg Cost</span>
+                    <span className="detail-value">{formatCurrency(selectedHolding.avgCost)}</span>
+                  </div>
+                  <div className="detail-item">
+                    <span className="detail-label">Current Price</span>
+                    <span className="detail-value">{formatCurrency(selectedHolding.currentPrice)}</span>
+                  </div>
+                  <div className="detail-item">
+                    <span className="detail-label">Total Value</span>
+                    <span className="detail-value">{formatCurrency(selectedHolding.value)}</span>
+                  </div>
+                  <div className="detail-item">
+                    <span className="detail-label">Change</span>
+                    <span className={`detail-value ${selectedHolding.change >= 0 ? 'positive' : 'negative'}`}>
+                      {formatCurrency(selectedHolding.change)}
+                    </span>
+                  </div>
+                  <div className="detail-item">
+                    <span className="detail-label">Change %</span>
+                    <span className={`detail-value ${selectedHolding.changePercent >= 0 ? 'positive' : 'negative'}`}>
+                      {formatPercent(selectedHolding.changePercent)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div className="modal-footer detail-modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-outline"
+                  onClick={() => setShowDetailModal(false)}
+                >
+                  Close
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={handleDetailEdit}
+                >
+                  Edit
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-danger"
+                  onClick={handleDetailSell}
+                >
+                  Sell
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="portfolio-summary">
           <div className="summary-card">
             <h2>Total Value</h2>
@@ -463,13 +580,13 @@ const PortfolioPage = () => {
               {formatCurrency(portfolio.totalReturn)} ({formatPercent(portfolio.totalReturnPercent)})
             </div>
           </div>
-          
+
           <div className="summary-card">
             <h2>Cash Balance</h2>
             <div className="summary-value">{formatCurrency(portfolio.cashBalance)}</div>
             <div className="summary-description">Available for trading</div>
           </div>
-          
+
           <div className="summary-card">
             <h2>Day Change</h2>
             <div className="summary-value">{formatCurrency(portfolio.dayChange)}</div>
@@ -478,7 +595,7 @@ const PortfolioPage = () => {
             </div>
           </div>
         </div>
-        
+
         <div className="performance-chart">
           <h2>Portfolio Performance</h2>
           <div className="performance-metrics">
@@ -493,28 +610,28 @@ const PortfolioPage = () => {
           </div>
           <PortfolioPerformanceChart performanceData={portfolio.performance} />
         </div>
-        
+
         <div className="tabs">
-          <button 
+          <button
             className={`tab ${activeTab === 'holdings' ? 'active' : ''}`}
             onClick={() => setActiveTab('holdings')}
           >
             Holdings
           </button>
-          <button 
+          <button
             className={`tab ${activeTab === 'allocation' ? 'active' : ''}`}
             onClick={() => setActiveTab('allocation')}
           >
             Asset Allocation
           </button>
-          <button 
+          <button
             className={`tab ${activeTab === 'transactions' ? 'active' : ''}`}
             onClick={() => setActiveTab('transactions')}
           >
             Transactions
           </button>
         </div>
-        
+
         {activeTab === 'holdings' && (
           <div className="tab-content">
             <h2>Holdings</h2>
@@ -531,7 +648,11 @@ const PortfolioPage = () => {
               </div>
               <div className="table-body">
                 {portfolio.holdings && portfolio.holdings.map((holding, idx) => (
-                  <div className="table-row" key={idx}>
+                  <div
+                    className="table-row clickable-row"
+                    key={idx}
+                    onClick={() => handleHoldingClick(holding)}
+                  >
                     <div className="table-cell symbol">{holding.symbol}</div>
                     <div className="table-cell name">{holding.name}</div>
                     <div className="table-cell shares">{holding.shares}</div>
@@ -550,7 +671,7 @@ const PortfolioPage = () => {
             </div>
           </div>
         )}
-        
+
         {activeTab === 'allocation' && (
           <div className="tab-content">
             <h2>Asset Allocation</h2>
@@ -566,7 +687,7 @@ const PortfolioPage = () => {
                     <div className="header-cell">Change</div>
                   </div>
                   <div className="table-body">
-                    {portfolio.allocation && typeof portfolio.allocation === 'object' && 
+                    {portfolio.allocation && typeof portfolio.allocation === 'object' &&
                       Object.entries(portfolio.allocation).map(([asset, percent], idx) => (
                         <div className="table-row" key={idx}>
                           <div className="table-cell asset">{asset.charAt(0).toUpperCase() + asset.slice(1)}</div>
@@ -583,7 +704,7 @@ const PortfolioPage = () => {
             </div>
           </div>
         )}
-        
+
         {activeTab === 'transactions' && (
           <div className="tab-content">
             <h2>Recent Transactions</h2>
