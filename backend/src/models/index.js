@@ -5,6 +5,9 @@ const Portfolio = require('./Portfolio');
 const Strategy = require('./Strategy');
 const Prediction = require('./Prediction');
 const MarketAnalysis = require('./MarketAnalysis');
+const ActiveStrategy = require('./ActiveStrategy');
+const AIAnalysis = require('./AIAnalysis');
+const AIResult = require('./AIResult');
 
 // Define associations
 User.hasMany(Portfolio, { foreignKey: 'userId', as: 'portfolios' });
@@ -18,6 +21,15 @@ Prediction.belongsTo(User, { foreignKey: 'userId', as: 'user' });
 
 User.hasMany(MarketAnalysis, { foreignKey: 'userId', as: 'analyses' });
 MarketAnalysis.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+
+User.hasMany(ActiveStrategy, { foreignKey: 'userId', as: 'activeStrategies' });
+ActiveStrategy.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+
+User.hasMany(AIAnalysis, { foreignKey: 'userId', as: 'aiAnalyses' });
+AIAnalysis.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+
+User.hasMany(AIResult, { foreignKey: 'userId', as: 'aiResults' });
+AIResult.belongsTo(User, { foreignKey: 'userId', as: 'user' });
 
 // Initialize database
 const initializeDatabase = async () => {
@@ -44,5 +56,8 @@ module.exports = {
   Strategy,
   Prediction,
   MarketAnalysis,
+  ActiveStrategy,
+  AIAnalysis,
+  AIResult,
   initializeDatabase
 };

@@ -122,6 +122,15 @@ const Navigation = () => {
           </li>
           <li className="nav-item">
             <Link
+              to="/ai-risk-tools"
+              className={`nav-link ${location.pathname === '/ai-risk-tools' ? 'active' : ''}`}
+            >
+              <span className="nav-icon">⚠️</span>
+              <span className="nav-text">AI Risk Tools</span>
+            </Link>
+          </li>
+          <li className="nav-item">
+            <Link
               to="/backtesting"
               className={`nav-link ${location.pathname === '/backtesting' ? 'active' : ''}`}
             >

@@ -19,6 +19,95 @@ class AlgoTradingService {
   constructor() {
     this.activeStrategies = new Map(); // Running strategies
     this.strategyIntervals = new Map(); // Interval timers
+    this._dbModelsReady = false;
+  }
+
+  /**
+   * Call once after DB is initialized. Reloads active strategies from DB
+   * and re-subscribes each one to the trading loop.
+   */
+  async recoverStrategiesFromDB() {
+    try {
+      // Lazy-require to avoid circular deps at module load time
+      const { ActiveStrategy } = require('../models');
+      this._dbModelsReady = true;
+
+      const rows = await ActiveStrategy.findAll({ where: { status: 'active' } });
+      if (rows.length === 0) {
+        console.log('[AlgoTrading] No active strategies to recover from DB.');
+        return;
+      }
+
+      console.log(`[AlgoTrading] Recovering ${rows.length} active strategy(ies) from DB...`);
+
+      for (const row of rows) {
+        const { strategyId, userId, config } = row;
+        if (this.activeStrategies.has(strategyId)) continue; // already running
+
+        // Only restart if Alpaca is connected (it may not be at startup)
+        // Store the config so it can be re-started when Alpaca connects
+        this.activeStrategies.set(strategyId, {
+          symbol: config.symbol || row.symbol,
+          strategy: config.strategy,
+          config,
+          userId,
+          status: 'PENDING_RECONNECT',
+          startedAt: row.startedAt,
+          trades: [],
+          currentPosition: null,
+          recoveredFromDB: true
+        });
+
+        console.log(`[AlgoTrading] Recovered strategy ${strategyId} (${row.symbol}) — will auto-start when Alpaca connects.`);
+      }
+    } catch (err) {
+      console.error('[AlgoTrading] Failed to recover strategies from DB:', err.message);
+    }
+  }
+
+  /**
+   * Called after Alpaca is connected. Re-starts any PENDING_RECONNECT strategies.
+   */
+  async resumePendingStrategies() {
+    for (const [strategyId, state] of this.activeStrategies) {
+      if (state.status === 'PENDING_RECONNECT') {
+        console.log(`[AlgoTrading] Resuming strategy ${strategyId} (${state.symbol}) after Alpaca connect.`);
+        try {
+          await this.startAutoTrading(strategyId, state.config);
+        } catch (err) {
+          console.error(`[AlgoTrading] Could not resume strategy ${strategyId}:`, err.message);
+        }
+      }
+    }
+  }
+
+  /**
+   * Persist strategy row to DB (upsert by strategyId).
+   */
+  async _persistStrategy(strategyId, status, config, userId) {
+    if (!this._dbModelsReady) return;
+    try {
+      const { ActiveStrategy } = require('../models');
+      const [row] = await ActiveStrategy.findOrCreate({
+        where: { strategyId },
+        defaults: {
+          strategyId,
+          userId: userId || null,
+          symbol: config.symbol || '',
+          status,
+          startedAt: new Date(),
+          config
+        }
+      });
+      if (row) {
+        row.status = status;
+        row.config = config;
+        if (status === 'stopped') row.stoppedAt = new Date();
+        await row.save();
+      }
+    } catch (err) {
+      console.error(`[AlgoTrading] DB persist error for ${strategyId}:`, err.message);
+    }
   }
 
   // ==================== TECHNICAL INDICATORS ====================
@@ -1533,24 +1622,31 @@ class AlgoTradingService {
       stopLoss = 0.02,
       takeProfit = 0.05,
       checkInterval = 60000, // 1 minute default
+      userId = null,
     } = config;
 
-    if (this.activeStrategies.has(strategyId)) {
+    // If previously stored as PENDING_RECONNECT, remove that stub first
+    const existing = this.activeStrategies.get(strategyId);
+    if (existing && existing.status === 'RUNNING') {
       throw new Error('Strategy is already running');
     }
 
     console.log(`Starting auto-trading for ${symbol} with strategy ${strategy.type}`);
 
-    // Store strategy config
+    // Store strategy config in memory
     this.activeStrategies.set(strategyId, {
       symbol,
       strategy,
       config,
+      userId,
       status: 'RUNNING',
       startedAt: new Date().toISOString(),
       trades: [],
       currentPosition: null,
     });
+
+    // Persist to DB
+    await this._persistStrategy(strategyId, 'active', config, userId);
 
     // Start monitoring interval
     const interval = setInterval(async () => {
@@ -1562,6 +1658,19 @@ class AlgoTradingService {
     }, checkInterval);
 
     this.strategyIntervals.set(strategyId, interval);
+
+    // Re-subscribe to Alpaca market data stream for this symbol
+    if (alpacaService.isInitialized && alpacaService.alpaca) {
+      try {
+        const dataStream = alpacaService.alpaca.data_stream_v2;
+        if (dataStream && typeof dataStream.subscribeForQuotes === 'function') {
+          dataStream.subscribeForQuotes([symbol]);
+          console.log(`[AlgoTrading] Subscribed to Alpaca quote stream for ${symbol}`);
+        }
+      } catch (streamErr) {
+        console.warn(`[AlgoTrading] Could not subscribe to stream for ${symbol}:`, streamErr.message);
+      }
+    }
 
     // Run initial check
     await this.checkAndExecute(strategyId);
@@ -1714,6 +1823,11 @@ class AlgoTradingService {
     if (strategy) {
       strategy.status = 'STOPPED';
       strategy.stoppedAt = new Date().toISOString();
+
+      // Persist stopped state to DB (fire-and-forget)
+      this._persistStrategy(strategyId, 'stopped', strategy.config, strategy.userId).catch(err =>
+        console.error(`[AlgoTrading] Failed to persist stop for ${strategyId}:`, err.message)
+      );
     }
 
     return { success: true, message: 'Auto-trading stopped' };

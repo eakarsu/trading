@@ -1,3 +1,15 @@
+// === Batch 11 Gaps & Frontend Mounts ===
+import GapSentimentAnalyzerPage from './pages/gap/GapSentimentAnalyzerPage'
+import GapRiskCalculatorPage from './pages/gap/GapRiskCalculatorPage'
+import GapCorrelationAnalyzerPage from './pages/gap/GapCorrelationAnalyzerPage'
+import GapAlertOptimizerPage from './pages/gap/GapAlertOptimizerPage'
+import GapResearchSummarizerPage from './pages/gap/GapResearchSummarizerPage'
+import GapRealtimeWebsocketPage from './pages/gap/GapRealtimeWebsocketPage'
+import GapOptionsStrategiesPage from './pages/gap/GapOptionsStrategiesPage'
+import GapTaxLossHarvestingPage from './pages/gap/GapTaxLossHarvestingPage'
+import GapPaperTradingSimPage from './pages/gap/GapPaperTradingSimPage'
+import GapSocialTradingPage from './pages/gap/GapSocialTradingPage'
+import GapRiskManagementRulesPage from './pages/gap/GapRiskManagementRulesPage'
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
@@ -24,6 +36,8 @@ import AIStrategiesPage from './pages/AIStrategiesPage';
 import StockPicksPage from './pages/StockPicksPage';
 import TradingAssistantPage from './pages/TradingAssistantPage';
 import ProfilePage from './pages/ProfilePage';
+import TradeJournalPage from './pages/TradeJournalPage';
+import AIRiskToolsPage from './pages/AIRiskToolsPage';
 
 function App() {
   return (
@@ -179,6 +193,16 @@ function App() {
             }
           />
 
+          {/* Protected Routes - Trade Journal (AI-generated rationale per trade) */}
+          <Route
+            path="/trade-journal"
+            element={
+              <ProtectedRoute>
+                <TradeJournalPage />
+              </ProtectedRoute>
+            }
+          />
+
           {/* Protected Routes - Profile */}
           <Route
             path="/profile"
@@ -188,6 +212,28 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+          {/* Protected Routes - AI Risk Tools */}
+          <Route
+            path="/ai-risk-tools"
+            element={
+              <ProtectedRoute>
+                <AIRiskToolsPage />
+              </ProtectedRoute>
+            }
+          />
+          {/* === Batch 11 Gaps & Frontend Mounts === */}
+          <Route path="/gap/sentiment-analyzer" element={<GapSentimentAnalyzerPage />} />
+          <Route path="/gap/risk-calculator" element={<GapRiskCalculatorPage />} />
+          <Route path="/gap/correlation-analyzer" element={<GapCorrelationAnalyzerPage />} />
+          <Route path="/gap/alert-optimizer" element={<GapAlertOptimizerPage />} />
+          <Route path="/gap/research-summarizer" element={<GapResearchSummarizerPage />} />
+          <Route path="/gap/realtime-websocket" element={<GapRealtimeWebsocketPage />} />
+          <Route path="/gap/options-strategies" element={<GapOptionsStrategiesPage />} />
+          <Route path="/gap/tax-loss-harvesting" element={<GapTaxLossHarvestingPage />} />
+          <Route path="/gap/paper-trading-sim" element={<GapPaperTradingSimPage />} />
+          <Route path="/gap/social-trading" element={<GapSocialTradingPage />} />
+          <Route path="/gap/risk-management-rules" element={<GapRiskManagementRulesPage />} />
         </Routes>
       </Layout>
     </Router>

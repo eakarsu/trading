@@ -5,17 +5,43 @@ dotenv.config({ path: path.join(__dirname, '../.env') });
 
 const express = require('express');
 const cors = require('cors');
+// Lazy-require helmet so the server still boots if dependencies have not
+// been re-installed yet after the audit fix added it to package.json.
+let helmet;
+try {
+  helmet = require('helmet');
+} catch (_) {
+  console.warn('[server] helmet not installed yet — run `npm install` to enable security headers');
+  helmet = () => (req, res, next) => next();
+}
 const http = require('http');
 const socketIo = require('socket.io');
 const { initializeDatabase } = require('./src/models');
+
+// Env-based CORS allow-list (audit fix: open CORS not safe for prod)
+const ALLOWED_ORIGINS = (process.env.CORS_ALLOWED_ORIGINS || 'http://localhost:3000,http://localhost:5173')
+  .split(',').map(s => s.trim()).filter(Boolean);
+
+const corsOptions = {
+  origin: (origin, cb) => {
+    // Allow non-browser tools (no origin) and any explicit allow-list match
+    if (!origin || ALLOWED_ORIGINS.includes(origin) || ALLOWED_ORIGINS.includes('*')) {
+      return cb(null, true);
+    }
+    return cb(new Error(`CORS: origin ${origin} not allowed`));
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH']
+};
 
 // Initialize Express app
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: "*",
-    methods: ["GET", "POST"]
+    origin: ALLOWED_ORIGINS.includes('*') ? '*' : ALLOWED_ORIGINS,
+    methods: ['GET', 'POST'],
+    credentials: true
   }
 });
 
@@ -27,6 +53,10 @@ const initializeApp = async () => {
       throw new Error('Failed to initialize database');
     }
     console.log('✅ PostgreSQL connected and models synchronized');
+
+    // Recover active trading strategies from DB after models are ready
+    const algoTradingService = require('./src/services/algoTradingService');
+    await algoTradingService.recoverStrategiesFromDB();
   } catch (error) {
     console.error('❌ Database initialization error:', error);
     process.exit(1);
@@ -36,9 +66,13 @@ const initializeApp = async () => {
 // Initialize database connection
 initializeApp();
 
-// Middleware
-app.use(cors());
-app.use(express.json());
+// Middleware (security-first)
+app.use(helmet({
+  contentSecurityPolicy: false, // disable CSP at API layer; FE handles its own
+  crossOriginEmbedderPolicy: false
+}));
+app.use(cors(corsOptions));
+app.use(express.json({ limit: '1mb' }));
 
 // Basic route
 app.get('/', (req, res) => {
@@ -92,6 +126,8 @@ app.use('/api/stock-picks', require('./src/routes/stockPicksRoutes'));
 app.use('/api/alpaca', require('./src/routes/alpacaRoutes'));
 app.use('/api/algo', require('./src/routes/algoTradingRoutes'));
 app.use('/api/brokers', require('./src/routes/brokerRoutes'));
+app.use('/api/ai', require('./src/routes/aiResultsRoutes'));
+app.use('/api/ai-extras', require('./src/routes/aiExtrasRoutes'));
 
 // 404 handler
 app.use('*', (req, res) => {
@@ -164,3 +200,5 @@ server.listen(PORT, () => {
 });
 
 module.exports = { app, server, io };
+app.use('/api', require('./src/routes/gap-features')); // === Batch 11 Gaps & Frontend Mounts ===
+

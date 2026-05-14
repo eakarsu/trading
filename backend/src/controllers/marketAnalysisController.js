@@ -1,4 +1,5 @@
 const MarketAnalysis = require('../models/MarketAnalysis');
+const AIAnalysis = require('../models/AIAnalysis');
 const aiService = require('../utils/aiService');
 
 // Get all market analyses for user
@@ -393,8 +394,9 @@ exports.generateMarketAnalysis = async (req, res) => {
     }
     
     // Use AI service to generate analysis
+    const modelUsed = 'anthropic/claude-sonnet-4';
     const aiAnalysis = await aiService.generateMarketAnalysis(marketData.data);
-    
+
     // Parse AI response
     let analysisData;
     try {
@@ -402,30 +404,32 @@ exports.generateMarketAnalysis = async (req, res) => {
     } catch (parseError) {
       // If AI response isn't valid JSON, create a basic structure
       analysisData = {
-        technical: {
-          indicators: [],
-          patterns: []
-        },
-        fundamental: {
-          screener: []
-        },
-        sentiment: {
-          overall: aiAnalysis,
-          news: [],
-          social: []
-        }
+        technical: { indicators: [], patterns: [] },
+        fundamental: { screener: [] },
+        sentiment: { overall: aiAnalysis, news: [], social: [] }
       };
     }
-    
+
+    const symbol = req.body.symbol || 'MARKET';
+
+    // Persist to MarketAnalysis (existing table)
     const analysis = await MarketAnalysis.create({
       userId: req.user.id,
-      symbol: 'MARKET', // Default symbol for general market analysis
-      currentPrice: 0, // Default price for general market analysis
+      symbol,
+      currentPrice: 0,
       technical: analysisData.technical,
       fundamental: analysisData.fundamental,
       sentiment: analysisData.sentiment
     });
-    
+
+    // Persist to AIAnalysis (new table for per-symbol history)
+    await AIAnalysis.create({
+      userId: req.user.id,
+      symbol,
+      analysisJson: analysisData,
+      modelUsed
+    });
+
     res.status(201).json(analysis);
   } catch (error) {
     console.error('Error generating market analysis:', error);
@@ -600,8 +604,54 @@ exports.generateStockPicks = async (req, res) => {
     res.json(response);
   } catch (error) {
     console.error('Error generating stock picks:', error);
-    res.status(500).json({ 
-      message: 'Server error while generating stock picks' 
+    res.status(500).json({
+      message: 'Server error while generating stock picks'
     });
+  }
+};
+
+// GET /api/analysis/:symbol/history
+// Returns past AI analyses for the given symbol, newest first
+exports.getAnalysisHistory = async (req, res) => {
+  try {
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({ message: 'User not authenticated' });
+    }
+
+    const { symbol } = req.params;
+    const limit = Math.min(parseInt(req.query.limit, 10) || 20, 100);
+    const offset = parseInt(req.query.offset, 10) || 0;
+
+    const { Op } = require('sequelize');
+    const rows = await AIAnalysis.findAll({
+      where: {
+        userId: req.user.id,
+        symbol: symbol.toUpperCase()
+      },
+      order: [['createdAt', 'DESC']],
+      limit,
+      offset
+    });
+
+    const total = await AIAnalysis.count({
+      where: { userId: req.user.id, symbol: symbol.toUpperCase() }
+    });
+
+    res.json({
+      symbol: symbol.toUpperCase(),
+      total,
+      limit,
+      offset,
+      data: rows.map(r => ({
+        id: r.id,
+        symbol: r.symbol,
+        modelUsed: r.modelUsed,
+        analysisJson: r.analysisJson,
+        createdAt: r.createdAt
+      }))
+    });
+  } catch (error) {
+    console.error('Error fetching analysis history:', error);
+    res.status(500).json({ message: 'Server error while fetching analysis history' });
   }
 };

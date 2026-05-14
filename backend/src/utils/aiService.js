@@ -1,11 +1,35 @@
 const axios = require('axios');
+const { parseAIJson } = require('./parseAIJson');
 
-// OpenRouter AI Service
+// Canonical model IDs (audit fix: anthropic/claude-sonnet-4 is non-canonical).
+// Use the OpenRouter slug + a reliable fallback when rate limited or 5xx.
+const DEFAULT_MODEL = process.env.AI_DEFAULT_MODEL || 'anthropic/claude-3-5-sonnet-20241022';
+const FALLBACK_MODEL = process.env.AI_FALLBACK_MODEL || 'anthropic/claude-3-haiku';
+
+// Simple in-memory prompt cache (key -> { value, expiresAt })
+const PROMPT_CACHE = new Map();
+const CACHE_TTL_MS = parseInt(process.env.AI_CACHE_TTL_MS || (15 * 60 * 1000), 10); // 15 min
+
+function cacheKey(model, systemPrompt, prompt, temperature) {
+  // Cheap, collision-resistant-enough key for prompt caching
+  return `${model}::${temperature}::${systemPrompt.length}:${prompt.length}::${prompt.slice(0, 80)}`;
+}
+
+function sleep(ms) {
+  return new Promise(r => setTimeout(r, ms));
+}
+
+// OpenRouter AI Service — resilient client (retry, fallback, cache, telemetry)
 class AIService {
   constructor() {
     this.apiKey = process.env.OPENROUTER_API_KEY;
     this.baseUrl = 'https://openrouter.ai/api/v1';
-    
+    this.defaultModel = DEFAULT_MODEL;
+    this.fallbackModel = FALLBACK_MODEL;
+    this.requestCount = 0;
+    this.errorCount = 0;
+    this.cacheHits = 0;
+
     // Default headers for OpenRouter API
     this.headers = {
       'Authorization': `Bearer ${this.apiKey}`,
@@ -15,36 +39,90 @@ class AIService {
     };
   }
 
-  // Generic method to call OpenRouter API
+  getStats() {
+    return {
+      requestCount: this.requestCount,
+      errorCount: this.errorCount,
+      cacheHits: this.cacheHits,
+      cacheSize: PROMPT_CACHE.size
+    };
+  }
+
+  // Generic method to call OpenRouter API with retry + fallback + caching
   async callAI(prompt, options = {}) {
-    try {
-      const requestBody = {
-        model: options.model || 'anthropic/claude-sonnet-4',
-        messages: [
-          {
-            role: 'system',
-            content: options.systemPrompt || 'You are an expert financial AI assistant.'
-          },
-          {
-            role: 'user',
-            content: prompt
-          }
-        ],
-        temperature: options.temperature || 0.7,
-        max_tokens: options.maxTokens || 1000
-      };
+    const model = options.model || this.defaultModel;
+    const systemPrompt = options.systemPrompt || 'You are an expert financial AI assistant.';
+    const temperature = options.temperature ?? 0.7;
+    const maxTokens = options.maxTokens || 1000;
+    const useCache = options.useCache !== false;
+    const timeoutMs = options.timeoutMs || 30000;
 
-      const response = await axios.post(
-        `${this.baseUrl}/chat/completions`,
-        requestBody,
-        { headers: this.headers }
-      );
-
-      return response.data.choices[0].message.content;
-    } catch (error) {
-      console.error('Error calling OpenRouter API:', error.response?.data || error.message);
-      throw new Error(`AI service error: ${error.response?.data?.error?.message || error.message}`);
+    // 1. Cache lookup
+    const ck = cacheKey(model, systemPrompt, prompt, temperature);
+    if (useCache) {
+      const hit = PROMPT_CACHE.get(ck);
+      if (hit && hit.expiresAt > Date.now()) {
+        this.cacheHits++;
+        return hit.value;
+      }
+      if (hit) PROMPT_CACHE.delete(ck);
     }
+
+    const requestBody = {
+      model,
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: prompt }
+      ],
+      temperature,
+      max_tokens: maxTokens
+    };
+
+    const maxRetries = options.maxRetries ?? 2;
+    let lastErr;
+    let currentModel = model;
+
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        this.requestCount++;
+        const response = await axios.post(
+          `${this.baseUrl}/chat/completions`,
+          { ...requestBody, model: currentModel },
+          { headers: this.headers, timeout: timeoutMs }
+        );
+        const content = response.data.choices[0].message.content;
+
+        if (useCache) {
+          PROMPT_CACHE.set(ck, { value: content, expiresAt: Date.now() + CACHE_TTL_MS });
+        }
+        return content;
+      } catch (error) {
+        this.errorCount++;
+        lastErr = error;
+        const status = error.response?.status;
+        // Rate-limit or transient 5xx → backoff then retry, swap to fallback after first failure
+        if ((status === 429 || (status >= 500 && status < 600) || error.code === 'ECONNABORTED') && attempt < maxRetries) {
+          const delay = Math.min(2000 * Math.pow(2, attempt), 10000);
+          console.warn(`[AIService] ${status || error.code} on model=${currentModel}, retrying in ${delay}ms (attempt ${attempt + 1}/${maxRetries})`);
+          await sleep(delay);
+          if (currentModel !== this.fallbackModel) currentModel = this.fallbackModel;
+          continue;
+        }
+        console.error('Error calling OpenRouter API:', error.response?.data || error.message);
+        throw new Error(`AI service error: ${error.response?.data?.error?.message || error.message}`);
+      }
+    }
+    throw lastErr;
+  }
+
+  // Convenience: call AI and parse JSON via 3-strategy parser
+  async callAIJson(prompt, options = {}) {
+    const raw = await this.callAI(prompt, options);
+    const parsed = parseAIJson(raw, { fallback: null });
+    if (parsed === null) {
+      console.warn('[AIService] callAIJson: parseAIJson returned null, raw length=', raw?.length);
+    }
+    return { raw, parsed };
   }
 
   // Generate market analysis
@@ -88,7 +166,7 @@ class AIService {
     
     return await this.callAI(prompt, {
       systemPrompt,
-      model: options.model || 'anthropic/claude-sonnet-4',
+      model: options.model || DEFAULT_MODEL,
       temperature: 0.5,
       maxTokens: 2000
     });
@@ -134,7 +212,7 @@ class AIService {
     
     return await this.callAI(prompt, {
       systemPrompt,
-      model: options.model || 'anthropic/claude-sonnet-4',
+      model: options.model || DEFAULT_MODEL,
       temperature: 0.6,
       maxTokens: 2500
     });
@@ -230,7 +308,7 @@ class AIService {
     
     return await this.callAI(prompt, {
       systemPrompt,
-      model: options.model || 'anthropic/claude-sonnet-4',
+      model: options.model || DEFAULT_MODEL,
       temperature: 0.4,
       maxTokens: 2500
     });
@@ -287,7 +365,7 @@ class AIService {
     
     return await this.callAI(prompt, {
       systemPrompt,
-      model: options.model || 'anthropic/claude-sonnet-4',
+      model: options.model || DEFAULT_MODEL,
       temperature: 0.5,
       maxTokens: 2000
     });
@@ -336,7 +414,7 @@ class AIService {
     
     return await this.callAI(prompt, {
       systemPrompt,
-      model: options.model || 'anthropic/claude-sonnet-4',
+      model: options.model || DEFAULT_MODEL,
       temperature: 0.3,
       maxTokens: 1500
     });
@@ -363,7 +441,7 @@ class AIService {
     
     return await this.callAI(prompt, {
       systemPrompt,
-      model: options.model || 'anthropic/claude-sonnet-4',
+      model: options.model || DEFAULT_MODEL,
       temperature: 0.7,
       maxTokens: 1000
     });
@@ -574,7 +652,7 @@ class AIService {
     
     return await this.callAI(prompt, {
       systemPrompt,
-      model: options.model || 'anthropic/claude-sonnet-4',
+      model: options.model || DEFAULT_MODEL,
       temperature: 0.4,
       maxTokens: 4000
     });

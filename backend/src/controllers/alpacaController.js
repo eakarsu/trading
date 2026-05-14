@@ -32,6 +32,12 @@ const initializeAlpaca = async (req, res) => {
     const account = await alpacaService.getAccount();
     console.log('Alpaca connected successfully!');
 
+    // Resume any strategies that were waiting for Alpaca to reconnect
+    const algoTradingService = require('../services/algoTradingService');
+    algoTradingService.resumePendingStrategies().catch(err =>
+      console.warn('[AlgoTrading] resumePendingStrategies error:', err.message)
+    );
+
     res.json({
       success: true,
       message: `Alpaca initialized in ${paper ? 'PAPER' : 'LIVE'} mode`,

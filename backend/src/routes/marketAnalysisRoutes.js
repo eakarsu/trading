@@ -10,6 +10,8 @@ router.post('/generate', protect, marketAnalysisController.generateMarketAnalysi
 router.post('/assistant', protect, marketAnalysisController.getTradingAssistantResponse);
 router.get('/export', protect, marketAnalysisController.exportAnalysis);
 router.post('/stock-picks', protect, marketAnalysisController.generateStockPicks);
+// Per-symbol AI analysis history (must come before /:id to avoid conflict)
+router.get('/:symbol/history', protect, marketAnalysisController.getAnalysisHistory);
 router.get('/:id', protect, marketAnalysisController.getMarketAnalysisById);
 router.put('/:id', protect, marketAnalysisController.updateMarketAnalysis);
 router.delete('/:id', protect, marketAnalysisController.deleteMarketAnalysis);
