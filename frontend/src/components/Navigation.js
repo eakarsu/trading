@@ -209,6 +209,22 @@ const Navigation = () => {
         </ul>
       </nav>
 
+      {/* Custom Views */}
+      <nav className="nav-section">
+        <h3 className="nav-section-title">Custom</h3>
+        <ul className="nav-menu">
+          <li className="nav-item">
+            <Link
+              to="/custom-views"
+              className={`nav-link ${location.pathname === '/custom-views' ? 'active' : ''}`}
+            >
+              <span className="nav-icon">📋</span>
+              <span className="nav-text">Trade Views</span>
+            </Link>
+          </li>
+        </ul>
+      </nav>
+
       {/* Profile */}
       <nav className="nav-section">
         <h3 className="nav-section-title">Account</h3>

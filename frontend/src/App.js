@@ -38,6 +38,7 @@ import TradingAssistantPage from './pages/TradingAssistantPage';
 import ProfilePage from './pages/ProfilePage';
 import TradeJournalPage from './pages/TradeJournalPage';
 import AIRiskToolsPage from './pages/AIRiskToolsPage';
+import CustomViewsPage from './pages/CustomViewsPage';
 
 function App() {
   return (
@@ -219,6 +220,15 @@ function App() {
             element={
               <ProtectedRoute>
                 <AIRiskToolsPage />
+              </ProtectedRoute>
+            }
+          />
+          {/* Custom Views - Trade Views */}
+          <Route
+            path="/custom-views"
+            element={
+              <ProtectedRoute>
+                <CustomViewsPage />
               </ProtectedRoute>
             }
           />

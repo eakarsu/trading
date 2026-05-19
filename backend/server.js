@@ -129,6 +129,9 @@ app.use('/api/brokers', require('./src/routes/brokerRoutes'));
 app.use('/api/ai', require('./src/routes/aiResultsRoutes'));
 app.use('/api/ai-extras', require('./src/routes/aiExtrasRoutes'));
 
+// Custom Views (mounted BEFORE 404 handler)
+app.use('/api/custom-views', require('./src/routes/customViews'));
+
 // 404 handler
 app.use('*', (req, res) => {
   res.status(404).json({
