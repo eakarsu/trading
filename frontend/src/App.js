@@ -39,12 +39,19 @@ import ProfilePage from './pages/ProfilePage';
 import TradeJournalPage from './pages/TradeJournalPage';
 import AIRiskToolsPage from './pages/AIRiskToolsPage';
 import CustomViewsPage from './pages/CustomViewsPage';
+import BrokerFailoverPage from './pages/BrokerFailoverPage';
+
+import CodexCustomVizFeature from './pages/CodexCustomVizFeature';
+import CodexOperationsFeature from './pages/CodexOperationsFeature';
 
 function App() {
   return (
     <Router>
       <Layout>
         <Routes>
+        <Route path="/codex/custom-viz" element={<CodexCustomVizFeature />} />
+        <Route path="/codex/operations" element={<CodexOperationsFeature />} />
+
           {/* Public Routes */}
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
@@ -220,6 +227,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <AIRiskToolsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/broker-failover"
+            element={
+              <ProtectedRoute>
+                <BrokerFailoverPage />
               </ProtectedRoute>
             }
           />

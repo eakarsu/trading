@@ -79,6 +79,15 @@ const Navigation = () => {
           </li>
           <li className="nav-item">
             <Link
+              to="/broker-failover"
+              className={`nav-link ${location.pathname === '/broker-failover' ? 'active' : ''}`}
+            >
+              <span className="nav-icon">🧭</span>
+              <span className="nav-text">Broker Failover</span>
+            </Link>
+          </li>
+          <li className="nav-item">
+            <Link
               to="/analytics"
               className={`nav-link ${location.pathname === '/analytics' ? 'active' : ''}`}
             >

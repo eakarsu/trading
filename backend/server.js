@@ -128,6 +128,7 @@ app.use('/api/algo', require('./src/routes/algoTradingRoutes'));
 app.use('/api/brokers', require('./src/routes/brokerRoutes'));
 app.use('/api/ai', require('./src/routes/aiResultsRoutes'));
 app.use('/api/ai-extras', require('./src/routes/aiExtrasRoutes'));
+app.use('/api/broker-failover', require('./src/routes/brokerFailoverRoutes'));
 
 // Custom Views (mounted BEFORE 404 handler)
 app.use('/api/custom-views', require('./src/routes/customViews'));
@@ -204,4 +205,3 @@ server.listen(PORT, () => {
 
 module.exports = { app, server, io };
 app.use('/api', require('./src/routes/gap-features')); // === Batch 11 Gaps & Frontend Mounts ===
-
