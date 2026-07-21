@@ -1,66 +1,50 @@
-# AI Trading Platform
+# Trading — deterministic paper execution
 
-## Project Vision
-Build a cutting-edge, professional trading website that showcases the full spectrum of generative AI capabilities for financial markets. The platform serves as both a functional trading tool and a demonstration of AI's transformative power in finance, targeting serious traders, institutions, and AI enthusiasts.
+This repository now has one supported end-to-end journey: authenticated, deterministic **paper trading** against licensed, timestamped market snapshots. It does not connect the supported order path to a bank, broker, or custodian. `ENABLE_LIVE_TRADING=true` is rejected at startup.
 
-## Prerequisites
-- Node.js (v14 or higher)
-- MongoDB (v4 or higher)
-- npm (v6 or higher)
-- Alpha Vantage API Key (Free tier available at https://www.alphavantage.co/support/#api-key)
+The paper path provides:
 
-## Installation
+- idempotent market ingestion and provider-record reconciliation;
+- deterministic stale-data, notional, exposure, cash/position, loss, participation, approval, and kill-switch controls;
+- liquidity-capped partial fills, resting limit orders, positions, and paper cash;
+- historical scenario replay for duplicate, stale, kill-switch, exhausted-liquidity, and partial-fill behavior;
+- append-only double-entry ledger events, reversible corrections, corporate actions, and hash-chained audit exports;
+- a protected `/paper-trading` UI with an explicit simulation/custody boundary;
+- repeatable migrations plus unit, PostgreSQL integration, API end-to-end, and failure-scenario CI.
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/eakarsu/trading.git
-   cd trading
-   ```
+Legacy strategy, portfolio, and AI routes are off by default. Older broker endpoints remain hard-disabled in this release and are not launch-approved.
 
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
+## Local development
 
-3. Start MongoDB:
-   - On macOS with Homebrew: `brew services start mongodb-community`
-   - On macOS with MongoDB installed via MongoDB website: `mongod --config /usr/local/etc/mongod.conf`
-   - On Linux: `sudo systemctl start mongod`
+Requirements: Node.js 20+, npm, and PostgreSQL 16+.
 
-4. Start the application:
-   ```bash
-   npm start
-   ```
+```bash
+cp .env.example .env
+npm --prefix backend ci
+npm --prefix frontend ci
+npm --prefix backend run db:migrate
+npm start
+```
 
-## API Keys Setup
-To use real market data, you need to obtain an Alpha Vantage API key:
+The frontend runs on `http://localhost:5173`; the API runs on `http://localhost:3001`. Create an administrator through a controlled database/admin process, then ingest data with `POST /api/paper-trading/admin/market-data`. Approved source identifiers must exactly match `LICENSED_MARKET_DATA_SOURCES`.
 
-1. Visit https://www.alphavantage.co/support/#api-key to get a free API key
-2. Add your API key to the backend/.env file:
-   ```
-   ALPHA_VANTAGE_API_KEY=your_actual_api_key_here
-   ```
+## Verification
 
-## Architecture
-- `/frontend` - User interface components (React.js)
-- `/backend` - Server-side logic and APIs (Node.js with Express)
-- `/ai-models` - AI/ML models and training scripts
-- `/data` - Data processing and storage solutions
-- `/docs` - Documentation and guidelines
-- `/config` - Configuration files
+```bash
+npm test
+RUN_DB_INTEGRATION=true npm --prefix backend run test:integration
+```
 
-## Ports
-- Frontend: http://localhost:3000
-- Backend: http://localhost:3001
+The integration suite requires an isolated migrated database through `DATABASE_URL`. Never point it at shared or production data.
 
-## Features
-1. **Intelligent Market Analysis Suite**
-2. **AI Strategy Generator and Optimizer**
-3. **Conversational Trading Assistant**
-4. **Advanced Content Generation**
-5. **Predictive Analytics and Forecasting**
+## Containers
 
-## Development
-- Backend: `npm run backend`
-- Frontend: `npm run frontend`
-- Both: `npm start` or `npm run dev`
+Set `POSTGRES_PASSWORD`, `JWT_SECRET`, `CORS_ORIGINS`, and `LICENSED_MARKET_DATA_SOURCES`, then run:
+
+```bash
+./start.sh
+```
+
+Compose waits for PostgreSQL, applies migrations as a one-shot service, and starts the read-only application container only after migration success.
+
+See [operations](docs/OPERATIONS.md), [security](SECURITY.md), and the [paper data contract](docs/PAPER_TRADING_CONTRACT.md).

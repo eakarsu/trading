@@ -17,7 +17,7 @@ const LoginPage = () => {
 
     try {
       await authAPI.login({ email, password });
-      navigate('/dashboard');
+      navigate('/paper-trading');
     } catch (err) {
       setError(err.message || 'Invalid email or password');
     } finally {
@@ -32,7 +32,7 @@ const LoginPage = () => {
           <span className="auth-logo-icon">📈</span>
         </div>
         <h1>Welcome Back</h1>
-        <p className="auth-subtitle">Sign in to your TradingAI account</p>
+        <p className="auth-subtitle">Sign in to your Paper Ledger account</p>
         {error && <div className="alert alert-error">{error}</div>}
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-group">

@@ -1,18 +1,15 @@
 const { Sequelize } = require('sequelize');
 
-const sequelize = new Sequelize(
-  process.env.DATABASE_URL || 'postgresql://trading_user:trading_password@localhost:5432/ai_trading_platform',
-  {
-    dialect: 'postgres',
-    logging: process.env.NODE_ENV === 'development' ? console.log : false,
-    pool: {
-      max: 5,
-      min: 0,
-      acquire: 30000,
-      idle: 10000
-    }
-  }
-);
+const options = {
+  dialect: 'postgres',
+  logging: process.env.NODE_ENV === 'development' ? console.log : false,
+  pool: { max: 5, min: 0, acquire: 30000, idle: 10000 },
+};
+const sequelize = process.env.DATABASE_URL
+  ? new Sequelize(process.env.DATABASE_URL, options)
+  : process.env.DB_HOST
+    ? new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, { ...options, host: process.env.DB_HOST, port: Number(process.env.DB_PORT || 5432) })
+    : new Sequelize('postgresql://localhost/ai_trading_platform', options);
 
 // Test the connection
 const testConnection = async () => {

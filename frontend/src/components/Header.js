@@ -38,7 +38,7 @@ const Header = () => {
       <div className="header-container">
         <h1 className="logo" onClick={() => navigate('/')}>
           <span className="logo-icon">📈</span>
-          <span className="logo-text">TradingAI</span>
+          <span className="logo-text">Paper Ledger</span>
         </h1>
         {!isAuthPage && (
           <div className="user-actions">

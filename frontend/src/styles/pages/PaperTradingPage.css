@@ -1,0 +1,36 @@
+.paper-page { display: grid; gap: var(--space-6); padding: var(--space-6); }
+.paper-header, .paper-section-title { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-4); }
+.paper-header h1 { margin: var(--space-2) 0; }
+.paper-header p { color: var(--text-secondary); max-width: 760px; }
+.paper-boundary { display: inline-block; color: var(--warning-light); background: var(--warning-bg); border: 1px solid rgba(245,158,11,.35); padding: .35rem .65rem; border-radius: var(--radius-full); font: 600 var(--text-xs)/1 var(--font-mono); letter-spacing: .06em; }
+.paper-actions { display: flex; gap: var(--space-3); }
+.paper-stop { color: var(--loss-light); background: var(--loss-bg); border: 1px solid var(--loss-border); padding: .7rem 1rem; border-radius: var(--radius-md); cursor: pointer; }
+.paper-stop:disabled { opacity: .45; cursor: not-allowed; }
+.paper-message { padding: var(--space-3) var(--space-4); border-radius: var(--radius-md); }
+.paper-message.success { color: var(--profit-light); background: var(--profit-bg); border: 1px solid var(--profit-border); }
+.paper-message.error { color: var(--loss-light); background: var(--loss-bg); border: 1px solid var(--loss-border); }
+.paper-metrics { display: grid; grid-template-columns: repeat(6, minmax(130px, 1fr)); gap: var(--space-3); }
+.paper-metrics article, .paper-card { background: var(--bg-card); border: 1px solid var(--border-default); border-radius: var(--radius-xl); box-shadow: var(--shadow-md); }
+.paper-metrics article { padding: var(--space-4); display: grid; gap: var(--space-2); }
+.paper-metrics span { color: var(--text-secondary); font-size: var(--text-sm); }
+.paper-metrics strong { font-family: var(--font-mono); font-size: var(--text-lg); }
+.paper-grid { display: grid; grid-template-columns: minmax(340px, .8fr) minmax(480px, 1.2fr); gap: var(--space-4); }
+.paper-card { padding: var(--space-5); min-width: 0; }
+.paper-card h2 { font-size: var(--text-xl); margin-bottom: var(--space-4); }
+.paper-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); }
+.paper-form label { display: grid; gap: var(--space-2); color: var(--text-secondary); font-size: var(--text-sm); }
+.paper-form input, .paper-form select { width: 100%; background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-default); border-radius: var(--radius-md); padding: .72rem; }
+.paper-form input:focus, .paper-form select:focus { outline: 2px solid var(--brand-primary); outline-offset: 1px; }
+.paper-form .paper-id { grid-column: 1 / -1; }
+.paper-decision { margin-top: var(--space-4); padding: var(--space-3); color: var(--text-secondary); background: var(--bg-tertiary); border-radius: var(--radius-md); font-size: var(--text-sm); }
+.paper-table-wrap { overflow-x: auto; }
+.paper-card table { width: 100%; border-collapse: collapse; font-size: var(--text-sm); }
+.paper-card th, .paper-card td { text-align: left; padding: .75rem; border-bottom: 1px solid var(--border-subtle); white-space: nowrap; }
+.paper-card th { color: var(--text-secondary); font-weight: 600; }
+.paper-empty { color: var(--text-secondary); padding: var(--space-5) 0; }
+.paper-status { padding: .25rem .5rem; border-radius: var(--radius-full); font: 600 var(--text-xs)/1 var(--font-mono); }
+.paper-status.filled { color: var(--profit-light); background: var(--profit-bg); }
+.paper-status.rejected, .paper-status.cancelled { color: var(--loss-light); background: var(--loss-bg); }
+.paper-status.partially_filled, .paper-status.open { color: var(--warning-light); background: var(--warning-bg); }
+@media (max-width: 1200px) { .paper-metrics { grid-template-columns: repeat(3, 1fr); } .paper-grid { grid-template-columns: 1fr; } }
+@media (max-width: 720px) { .paper-page { padding: var(--space-3); } .paper-header { flex-direction: column; } .paper-actions { width: 100%; flex-wrap: wrap; } .paper-metrics { grid-template-columns: repeat(2, 1fr); } .paper-form { grid-template-columns: 1fr; } .paper-form .paper-id { grid-column: auto; } }

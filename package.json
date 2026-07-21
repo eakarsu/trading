@@ -5,10 +5,13 @@
   "main": "index.js",
   "scripts": {
     "start": "concurrently \"npm run backend\" \"npm run frontend\"",
-    "dev": "concurrently \"npm run backend\" \"npm run frontend\"",
-    "backend": "cd backend && npm run dev",
-    "frontend": "cd frontend && npm start",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "npm start",
+    "backend": "npm --prefix backend run dev",
+    "frontend": "npm --prefix frontend run dev",
+    "test": "npm --prefix backend run test:unit && npm --prefix frontend run build",
+    "test:integration": "npm --prefix backend run test:integration",
+    "db:migrate": "npm --prefix backend run db:migrate",
+    "check": "npm test"
   },
   "keywords": [
     "ai",

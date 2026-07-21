@@ -1,207 +1,147 @@
-// Load environment variables FIRST, before any other imports
 const dotenv = require('dotenv');
 const path = require('path');
 dotenv.config({ path: path.join(__dirname, '../.env') });
 
-const express = require('express');
 const cors = require('cors');
-// Lazy-require helmet so the server still boots if dependencies have not
-// been re-installed yet after the audit fix added it to package.json.
-let helmet;
-try {
-  helmet = require('helmet');
-} catch (_) {
-  console.warn('[server] helmet not installed yet — run `npm install` to enable security headers');
-  helmet = () => (req, res, next) => next();
-}
+const express = require('express');
+const fs = require('fs');
+const helmet = require('helmet');
 const http = require('http');
-const socketIo = require('socket.io');
+const { sequelize } = require('./src/config/database');
+const { boolean, list, validateRuntime } = require('./src/config/runtime');
 const { initializeDatabase } = require('./src/models');
 
-// Env-based CORS allow-list (audit fix: open CORS not safe for prod)
-const ALLOWED_ORIGINS = (process.env.CORS_ALLOWED_ORIGINS || 'http://localhost:3000,http://localhost:5173')
-  .split(',').map(s => s.trim()).filter(Boolean);
-
+const allowedOrigins = list('CORS_ORIGINS', 'http://localhost:3000,http://localhost:5173');
 const corsOptions = {
-  origin: (origin, cb) => {
-    // Allow non-browser tools (no origin) and any explicit allow-list match
-    if (!origin || ALLOWED_ORIGINS.includes(origin) || ALLOWED_ORIGINS.includes('*')) {
-      return cb(null, true);
+  origin(origin, callback) {
+    if (!origin || allowedOrigins.includes(origin) || (process.env.NODE_ENV !== 'production' && allowedOrigins.includes('*'))) {
+      return callback(null, true);
     }
-    return cb(new Error(`CORS: origin ${origin} not allowed`));
+    return callback(Object.assign(new Error('Origin is not allowed by CORS policy'), { status: 403, code: 'CORS_DENIED' }));
   },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH']
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
 };
 
-// Initialize Express app
 const app = express();
 const server = http.createServer(app);
-const io = socketIo(server, {
-  cors: {
-    origin: ALLOWED_ORIGINS.includes('*') ? '*' : ALLOWED_ORIGINS,
-    methods: ['GET', 'POST'],
-    credentials: true
+const publicPath = path.join(__dirname, 'public');
+
+app.disable('x-powered-by');
+app.use(helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: false }));
+app.use(cors(corsOptions));
+app.use(express.json({ limit: '256kb' }));
+if (fs.existsSync(publicPath)) app.use(express.static(publicPath));
+
+app.get('/', (req, res) => res.json({
+  message: 'Paper Trading Platform API',
+  version: '2.0.0',
+  custodyBoundary: 'PAPER_SIMULATION_ONLY',
+  liveTradingEnabled: false,
+}));
+
+app.get('/health', async (req, res) => {
+  try {
+    await sequelize.query('SELECT 1');
+    res.json({ status: 'healthy', database: 'reachable', timestamp: new Date().toISOString(), uptime: process.uptime() });
+  } catch (error) {
+    res.status(503).json({ status: 'unhealthy', database: 'unreachable', timestamp: new Date().toISOString() });
   }
 });
 
-// Initialize PostgreSQL connection
-const initializeApp = async () => {
+app.get('/ready', async (req, res) => {
   try {
-    const dbInitialized = await initializeDatabase();
-    if (!dbInitialized) {
-      throw new Error('Failed to initialize database');
-    }
-    console.log('✅ PostgreSQL connected and models synchronized');
-
-    // Recover active trading strategies from DB after models are ready
-    const algoTradingService = require('./src/services/algoTradingService');
-    await algoTradingService.recoverStrategiesFromDB();
+    const [rows] = await sequelize.query("SELECT to_regclass('public.paper_orders') AS paper_orders");
+    if (!rows[0]?.paper_orders) return res.status(503).json({ status: 'not_ready', reason: 'migrations_required' });
+    return res.json({ status: 'ready', migrations: 'applied' });
   } catch (error) {
-    console.error('❌ Database initialization error:', error);
-    process.exit(1);
+    return res.status(503).json({ status: 'not_ready', reason: 'database_unreachable' });
   }
+});
+
+app.use('/api/health', require('./src/routes/healthRoutes'));
+app.use('/api/auth', require('./src/routes/authRoutes'));
+app.use('/api/users', require('./src/routes/userRoutes'));
+app.use('/api/paper-trading', require('./src/routes/paperTradingRoutes'));
+
+const disabled = feature => (req, res) => res.status(503).json({
+  code: 'FEATURE_DISABLED',
+  message: `${feature} is disabled. This deployment exposes paper simulation only.`,
+  custodyBoundary: 'PAPER_SIMULATION_ONLY',
+});
+const mountFeature = (enabled, routePath, modulePath, feature) => {
+  app.use(routePath, enabled ? require(modulePath) : disabled(feature));
 };
 
-// Initialize database connection
-initializeApp();
+const legacy = false;
+const experimentalAi = false;
+const liveTrading = false;
 
-// Middleware (security-first)
-app.use(helmet({
-  contentSecurityPolicy: false, // disable CSP at API layer; FE handles its own
-  crossOriginEmbedderPolicy: false
-}));
-app.use(cors(corsOptions));
-app.use(express.json({ limit: '1mb' }));
+mountFeature(legacy, '/api/market-data', './src/routes/marketDataRoutes', 'legacy market-data tools');
+mountFeature(legacy, '/api/strategies', './src/routes/strategyRoutes', 'legacy strategy tools');
+mountFeature(legacy, '/api/portfolio', './src/routes/portfolioRoutes', 'legacy portfolio tools');
+mountFeature(legacy, '/api/custom-views', './src/routes/customViews', 'custom views');
+mountFeature(experimentalAi, '/api/predictions', './src/routes/predictionRoutes', 'AI predictions');
+mountFeature(experimentalAi, '/api/analysis', './src/routes/marketAnalysisRoutes', 'AI analysis');
+mountFeature(experimentalAi, '/api/stock-picks', './src/routes/stockPicksRoutes', 'AI stock picks');
+mountFeature(experimentalAi, '/api/ai', './src/routes/aiResultsRoutes', 'AI results');
+mountFeature(experimentalAi, '/api/ai-extras', './src/routes/aiExtrasRoutes', 'AI extras');
+mountFeature(liveTrading, '/api/alpaca', './src/routes/alpacaRoutes', 'live broker execution');
+mountFeature(liveTrading, '/api/algo', './src/routes/algoTradingRoutes', 'live algorithm execution');
+mountFeature(liveTrading, '/api/brokers', './src/routes/brokerRoutes', 'broker connectivity');
+mountFeature(liveTrading, '/api/broker-failover', './src/routes/brokerFailoverRoutes', 'broker failover');
 
-// Basic route
-app.get('/', (req, res) => {
-  res.json({ 
-    message: 'AI Trading Platform API', 
-    version: '1.0.0',
-    status: 'operational',
-    database: 'PostgreSQL'
-  });
-});
+if (fs.existsSync(publicPath)) {
+  app.get(/^\/(?!api(?:\/|$)|health$|ready$).*/, (req, res) => res.sendFile(path.join(publicPath, 'index.html')));
+}
 
-// Health check route
-app.get('/health', (req, res) => {
-  res.json({
-    status: 'healthy',
-    timestamp: new Date().toISOString(),
-    database: 'PostgreSQL',
-    uptime: process.uptime()
-  });
-});
+app.use((req, res) => res.status(404).json({ code: 'NOT_FOUND', message: 'Route not found', path: req.originalUrl }));
 
-// Socket.io connection
-io.on('connection', (socket) => {
-  console.log('New client connected');
-  
-  socket.on('disconnect', () => {
-    console.log('Client disconnected');
-  });
-  
-  // Real-time market data updates
-  socket.on('subscribe-market-data', (symbols) => {
-    console.log('Client subscribed to market data:', symbols);
-    socket.join('market-data');
-  });
-  
-  socket.on('unsubscribe-market-data', () => {
-    console.log('Client unsubscribed from market data');
-    socket.leave('market-data');
-  });
-});
-
-// Routes
-app.use('/api/health', require('./src/routes/healthRoutes'));
-app.use('/api/market-data', require('./src/routes/marketDataRoutes'));
-app.use('/api/strategies', require('./src/routes/strategyRoutes'));
-app.use('/api/portfolio', require('./src/routes/portfolioRoutes'));
-app.use('/api/predictions', require('./src/routes/predictionRoutes'));
-app.use('/api/analysis', require('./src/routes/marketAnalysisRoutes'));
-app.use('/api/users', require('./src/routes/userRoutes'));
-app.use('/api/stock-picks', require('./src/routes/stockPicksRoutes'));
-app.use('/api/alpaca', require('./src/routes/alpacaRoutes'));
-app.use('/api/algo', require('./src/routes/algoTradingRoutes'));
-app.use('/api/brokers', require('./src/routes/brokerRoutes'));
-app.use('/api/ai', require('./src/routes/aiResultsRoutes'));
-app.use('/api/ai-extras', require('./src/routes/aiExtrasRoutes'));
-app.use('/api/broker-failover', require('./src/routes/brokerFailoverRoutes'));
-
-// Custom Views (mounted BEFORE 404 handler)
-app.use('/api/custom-views', require('./src/routes/customViews'));
-
-// 404 handler
-app.use('*', (req, res) => {
-  res.status(404).json({
-    message: 'Route not found',
-    path: req.originalUrl
-  });
-});
-
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error('Error:', err.stack);
-  
-  // Sequelize validation errors
+app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
   if (err.name === 'SequelizeValidationError') {
-    return res.status(400).json({
-      message: 'Validation error',
-      errors: err.errors.map(e => ({
-        field: e.path,
-        message: e.message
-      }))
-    });
+    return res.status(400).json({ code: 'VALIDATION_ERROR', message: 'Validation error', errors: err.errors.map(item => ({ field: item.path, message: item.message })) });
   }
-  
-  // Sequelize unique constraint errors
   if (err.name === 'SequelizeUniqueConstraintError') {
-    return res.status(409).json({
-      message: 'Resource already exists',
-      field: err.errors[0]?.path
-    });
+    return res.status(409).json({ code: 'CONFLICT', message: 'Resource already exists' });
   }
-  
-  // Sequelize foreign key constraint errors
   if (err.name === 'SequelizeForeignKeyConstraintError') {
-    return res.status(400).json({
-      message: 'Invalid reference to related resource'
-    });
+    return res.status(400).json({ code: 'INVALID_REFERENCE', message: 'Invalid reference to related resource' });
   }
-  
-  // Default error response
-  res.status(err.status || 500).json({ 
-    message: err.message || 'Something went wrong!',
-    error: process.env.NODE_ENV === 'development' ? err.stack : {}
+  const status = Number(err.status) || 500;
+  if (status >= 500) console.error('[request-error]', err);
+  return res.status(status).json({
+    code: err.code || 'INTERNAL_ERROR', message: status >= 500 ? 'Internal server error' : err.message,
+    ...(err.details === undefined ? {} : { details: err.details }),
   });
 });
 
-// Graceful shutdown
-process.on('SIGTERM', async () => {
-  console.log('SIGTERM received, shutting down gracefully');
-  server.close(() => {
-    console.log('HTTP server closed');
+async function start() {
+  validateRuntime();
+  const initialized = await initializeDatabase();
+  if (!initialized) throw new Error('Database initialization failed');
+  const port = Number(process.env.PORT || 3001);
+  const host = process.env.HOST || '127.0.0.1';
+  return new Promise(resolve => server.listen(port, host, () => {
+    console.log(`Paper Trading API listening on ${host}:${port}`);
+    resolve(server);
+  }));
+}
+
+async function shutdown(signal) {
+  console.log(`${signal} received; stopping HTTP and database connections`);
+  server.close(async () => {
+    await sequelize.close();
     process.exit(0);
   });
-});
+}
 
-process.on('SIGINT', async () => {
-  console.log('SIGINT received, shutting down gracefully');
-  server.close(() => {
-    console.log('HTTP server closed');
-    process.exit(0);
+if (require.main === module) {
+  start().catch(error => {
+    console.error('Startup failed:', error.message);
+    process.exit(1);
   });
-});
+  process.once('SIGTERM', () => shutdown('SIGTERM'));
+  process.once('SIGINT', () => shutdown('SIGINT'));
+}
 
-// Start server
-const PORT = process.env.PORT || 3001;
-server.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`🗄️  Database: PostgreSQL`);
-});
-
-module.exports = { app, server, io };
-app.use('/api', require('./src/routes/gap-features')); // === Batch 11 Gaps & Frontend Mounts ===
+module.exports = { app, server, start };

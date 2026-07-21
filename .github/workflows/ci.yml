@@ -1,0 +1,77 @@
+name: trading-ci
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: trading_ci
+          POSTGRES_USER: trading_ci
+          POSTGRES_PASSWORD: ci-only-password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U trading_ci -d trading_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+    env:
+      NODE_ENV: test
+      DATABASE_URL: postgresql://trading_ci:ci-only-password@localhost:5432/trading_ci
+      CORS_ORIGINS: http://localhost:5173
+      LICENSED_MARKET_DATA_SOURCES: integration-feed
+      RUN_DB_INTEGRATION: "true"
+      ENABLE_LIVE_TRADING: "false"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: |
+            backend/package-lock.json
+            frontend/package-lock.json
+      - name: Generate ephemeral authentication secret
+        run: echo "JWT_SECRET=$(openssl rand -hex 32)" >> "$GITHUB_ENV"
+      - name: Install backend
+        run: npm ci
+        working-directory: backend
+      - name: Exercise migrations up, down, and up
+        run: |
+          npm run db:migrate
+          npm run db:migrate:undo
+          npm run db:migrate
+        working-directory: backend
+      - name: Backend unit and failure tests
+        run: npm run test:unit
+        working-directory: backend
+      - name: PostgreSQL integration and API end-to-end tests
+        run: npm run test:integration
+        working-directory: backend
+      - name: Install and build frontend
+        run: npm ci && npm audit --audit-level=low && npm run build
+        working-directory: frontend
+      - name: Audit production dependencies
+        run: npm audit --omit=dev --audit-level=low
+        working-directory: backend
+      - name: Build production image
+        run: docker build -t trading-ci .
+
+  secrets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Reject secrets in the supported working tree
+        run: >-
+          docker run --rm -v "$PWD:/repo"
+          zricethezav/gitleaks:v8.30.1
+          dir /repo --no-banner --redact

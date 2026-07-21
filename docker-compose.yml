@@ -1,36 +1,57 @@
-version: "3.8"
 services:
   postgres:
-    image: postgres:15
-    container_name: ai-trading-postgres
-    ports:
-      - "5432:5432"
-    volumes:
-      - ./postgres-data:/var/lib/postgresql/data
+    image: postgres:16-alpine
     environment:
-      - POSTGRES_DB=ai_trading_platform
-      - POSTGRES_USER=trading_user
-      - POSTGRES_PASSWORD=trading_password
+      POSTGRES_DB: ai_trading_platform
+      POSTGRES_USER: trading_app
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U trading_user -d ai_trading_platform"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+      test: ["CMD-SHELL", "pg_isready -U trading_app -d ai_trading_platform"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    restart: unless-stopped
 
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
+  migrate:
+    build: .
+    command: ["npm", "run", "db:migrate"]
+    environment: &app-environment
+      NODE_ENV: production
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      DB_NAME: ai_trading_platform
+      DB_USER: trading_app
+      DB_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET:?Set a random JWT_SECRET of at least 32 characters}
+      CORS_ORIGINS: ${CORS_ORIGINS:?Set the browser origin}
+      LICENSED_MARKET_DATA_SOURCES: ${LICENSED_MARKET_DATA_SOURCES:?Set approved source identifiers}
+      ENABLE_LIVE_TRADING: "false"
+      ENABLE_LEGACY_FEATURES: "false"
+      ENABLE_EXPERIMENTAL_AI: "false"
     depends_on:
       postgres:
         condition: service_healthy
-    environment:
-      - DATABASE_URL=postgresql://trading_user:trading_password@postgres:5432/ai_trading_platform
-      - NODE_ENV=development
+    restart: "no"
+
+  app:
+    build: .
+    environment: *app-environment
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
     ports:
-      - "3000:3000"
       - "3001:3001"
-      - "5002:5002"
-    volumes:
-      - .:/app
-      - /app/node_modules
+    read_only: true
+    tmpfs:
+      - /tmp
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3001/ready').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

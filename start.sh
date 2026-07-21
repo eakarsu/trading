@@ -1,203 +1,41 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 
-# AI Trading Platform Start Script (PostgreSQL Version)
-
-echo "🚀 Starting AI Trading Platform with PostgreSQL..."
-
-# Function to check if a port is in use and kill processes
-check_port() {
-  local port=$1
-  local service_name=$2
-  if lsof -i :$port -t >/dev/null 2>&1; then
-    echo "🔄 Port $port ($service_name) is already in use. Killing process..."
-    # Get all PIDs using the port
-    local pids=$(lsof -ti:$port)
-    if [ ! -z "$pids" ]; then
-      echo "   Killing PIDs: $pids"
-      echo "$pids" | xargs kill -9 2>/dev/null || true
-      sleep 2
-      # Double check if port is still in use
-      if lsof -i :$port -t >/dev/null 2>&1; then
-        echo "   ⚠️  Port $port still in use, trying force kill..."
-        lsof -ti:$port | xargs kill -KILL 2>/dev/null || true
-        sleep 1
-      fi
-    fi
+for name in DATABASE_URL JWT_SECRET CORS_ORIGINS; do
+  if [[ -z "${!name:-}" ]]; then
+    echo "Required environment variable $name is not set" >&2
+    exit 1
   fi
-}
-
-# Function to kill processes by name
-kill_by_name() {
-  local process_name=$1
-  local pids=$(pgrep -f "$process_name" 2>/dev/null || true)
-  if [ ! -z "$pids" ]; then
-    echo "🔄 Killing $process_name processes: $pids"
-    echo "$pids" | xargs kill -9 2>/dev/null || true
-    sleep 1
-  fi
-}
-
-# Kill any processes using our ports and related processes
-echo "🧹 Cleaning up existing processes..."
-check_port 3000 "Frontend"
-check_port 3001 "Backend" 
-check_port 5002 "Python Data Server"
-# Don't kill PostgreSQL - we want to keep it running
-# Skip port 5432 (PostgreSQL) entirely
-
-# Also kill any remaining Node.js processes that might be related
-kill_by_name "node.*frontend"
-kill_by_name "node.*backend"
-kill_by_name "npm.*start"
-kill_by_name "npm.*dev"
-kill_by_name "yahoo_finance_server.py"
-kill_by_name "python.*yahoo_finance_server"
-
-# Wait a moment for cleanup
-sleep 2
-
-# Create PostgreSQL data directory if it doesn't exist
-POSTGRES_DATA_DIR="./postgres-data"
-if [ ! -d "$POSTGRES_DATA_DIR" ]; then
-  echo "� Creating PostgreSQL data directory..."
-  mkdir -p "$POSTGRES_DATA_DIR"
-fi
-
-# Function to check PostgreSQL connection
-check_postgres() {
-  local host=${1:-localhost}
-  local port=${2:-5432}
-  local user=${3:-trading_user}
-  local db=${4:-ai_trading_platform}
-  
-  # Try to connect using psql if available
-  if command -v psql >/dev/null 2>&1; then
-    PGPASSWORD=trading_password psql -h "$host" -p "$port" -U "$user" -d "$db" -c "SELECT 1;" >/dev/null 2>&1
-  else
-    # Fallback to nc (netcat) for basic connectivity check
-    nc -z "$host" "$port" 2>/dev/null
-  fi
-}
-
-# Function to check if PostgreSQL service is running (without connecting to specific DB)
-check_postgres_service() {
-  local host=${1:-localhost}
-  local port=${2:-5432}
-  
-  # Just check if PostgreSQL is listening on the port
-  if command -v psql >/dev/null 2>&1; then
-    psql -h "$host" -p "$port" -U postgres -c "SELECT 1;" >/dev/null 2>&1
-  else
-    nc -z "$host" "$port" 2>/dev/null
-  fi
-}
-
-# Check if PostgreSQL is running
-echo "🔍 Checking PostgreSQL..."
-
-# First check if we're running in Docker environment
-# Wait for PostgreSQL to be ready
-until nc -z localhost 5432; do
-    echo "Waiting for PostgreSQL at localhost:5432..."
-    sleep 2
 done
-echo "✅ PostgreSQL is running on localhost:5432"
 
-# Install backend dependencies if node_modules doesn't exist
-if [ ! -d "backend/node_modules" ]; then
-  echo "📦 Installing backend dependencies..."
-  cd backend && npm install && cd ..
-fi
-
-# Install frontend dependencies if node_modules doesn't exist
-if [ ! -d "frontend/node_modules" ]; then
-  echo "📦 Installing frontend dependencies..."
-  cd frontend && npm install && cd ..
-fi
-
-# Install Python dependencies if not already installed
-if ! python3 -c "import yfinance" 2>/dev/null; then
-  echo "📦 Installing Python dependencies..."
-  cd data/src/server && pip install -r requirements.txt && cd ../../..
-fi
-
-# Initialize database and seed data
-echo "🗄️  Initializing PostgreSQL database..."
-cd backend
-node -e "
-const { initializeDatabase } = require('./src/models');
-initializeDatabase().then(() => {
-  console.log('✅ Database initialized successfully');
-  process.exit(0);
-}).catch(err => {
-  console.error('❌ Database initialization failed:', err);
-  process.exit(1);
-});
-" || {
-  echo "❌ Database initialization failed. Please check your PostgreSQL connection."
+if [[ "${NODE_ENV:-production}" == "production" && -z "${LICENSED_MARKET_DATA_SOURCES:-}" ]]; then
+  echo "Required environment variable LICENSED_MARKET_DATA_SOURCES is not set" >&2
   exit 1
-}
+fi
 
-echo "🌱 Seeding database with sample data..."
-node seed.js || echo "⚠️  Seeding failed/skipped - database may already contain data"
-cd ..
+if [[ ${#JWT_SECRET} -lt 32 ]]; then
+  echo "JWT_SECRET must contain at least 32 characters" >&2
+  exit 1
+fi
 
-# Start backend, frontend, and Python server in parallel
-echo "⚙️  Starting backend, frontend, and Python server..."
+for dependency_dir in backend/node_modules frontend/node_modules; do
+  [[ -d "$dependency_dir" ]] || { echo "Missing $dependency_dir; install locked dependencies before startup." >&2; exit 1; }
+done
+[[ -d frontend/dist ]] || { echo "Missing frontend/dist; run the production build before startup." >&2; exit 1; }
 
-# Start Python server
-cd data/src/server
-python3 yahoo_finance_server.py > ../../../data_server.log 2>&1 &
-PYTHON_SERVER_PID=$!
-cd ../../..
+api_port="${PORT:-${BACKEND_PORT:-3001}}"; ui_port="${FRONTEND_PORT:-3000}"
+api_host="${HOST:-${BACKEND_HOST:-127.0.0.1}}"; ui_host="${FRONTEND_HOST:-127.0.0.1}"
+for port in "$api_port" "$ui_port"; do
+  if lsof -tiTCP:"$port" -sTCP:LISTEN >/dev/null 2>&1; then echo "Port $port is occupied; refusing to terminate another process." >&2; exit 1; fi
+done
 
-# Start backend
-cd backend
-PORT=3001 npm run dev > ../backend.log 2>&1 &
-BACKEND_PID=$!
-cd ..
-
-# Start frontend
-cd frontend
-PORT=3000 npm start > ../frontend.log 2>&1 &
-FRONTEND_PID=$!
-cd ..
-
-echo "✅ PostgreSQL is ready!"
-echo "✅ Python Server PID: $PYTHON_SERVER_PID"
-echo "✅ Backend PID: $BACKEND_PID"
-echo "✅ Frontend PID: $FRONTEND_PID"
-
-echo ""
-echo "🎉 All services started successfully!"
-echo "🌐 Frontend: http://localhost:3000"
-echo "🔧 Backend: http://localhost:3001"
-echo "📊 Python Data Server: http://localhost:5002"
-echo "🗄️  Database: PostgreSQL (ai_trading_platform)"
-echo ""
-echo "📝 Logs are being written to:"
-echo "   - data_server.log (Python server)"
-echo "   - backend.log (Node.js backend)"
-echo "   - frontend.log (React frontend)"
-echo ""
-echo "🔐 Test credentials:"
-echo "   - Admin: admin@trading.com / admin123"
-echo "   - Trader: trader1@trading.com / trader123"
-echo "   - Investor: investor1@trading.com / investor123"
-echo ""
-echo "⏹️  To stop the servers, press Ctrl+C"
-
-# Function to cleanup on exit
 cleanup() {
-  echo ""
-  echo "🛑 Shutting down services..."
-  kill $PYTHON_SERVER_PID $BACKEND_PID $FRONTEND_PID 2>/dev/null || true
-  echo "✅ Services stopped"
-  exit 0
+  kill -TERM "$api_pid" "$ui_pid" 2>/dev/null || true
+  wait "$api_pid" "$ui_pid" 2>/dev/null || true
 }
+trap cleanup EXIT INT TERM
 
-# Set up signal handlers
-trap cleanup SIGINT SIGTERM
-
-# Wait for processes to complete or be interrupted
-wait $PYTHON_SERVER_PID $BACKEND_PID $FRONTEND_PID
+env HOST="$api_host" PORT="$api_port" npm --prefix backend start & api_pid=$!
+npm --prefix frontend run preview -- --host "$ui_host" --port "$ui_port" --strictPort & ui_pid=$!
+while kill -0 "$api_pid" 2>/dev/null && kill -0 "$ui_pid" 2>/dev/null; do sleep 1; done
+exit 1
