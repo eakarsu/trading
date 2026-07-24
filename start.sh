@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+project_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$project_dir"
+if [[ -f .env ]]; then set -a; source .env; set +a; fi
+
 for name in DATABASE_URL JWT_SECRET CORS_ORIGINS; do
   if [[ -z "${!name:-}" ]]; then
     echo "Required environment variable $name is not set" >&2
@@ -30,8 +34,8 @@ for port in "$api_port" "$ui_port"; do
 done
 
 cleanup() {
-  kill -TERM "$api_pid" "$ui_pid" 2>/dev/null || true
-  wait "$api_pid" "$ui_pid" 2>/dev/null || true
+  kill -TERM "${api_pid:-}" "${ui_pid:-}" 2>/dev/null || true
+  wait "${api_pid:-}" "${ui_pid:-}" 2>/dev/null || true
 }
 trap cleanup EXIT INT TERM
 

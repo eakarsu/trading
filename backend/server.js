@@ -61,6 +61,7 @@ app.get('/ready', async (req, res) => {
 
 app.use('/api/health', require('./src/routes/healthRoutes'));
 app.use('/api/auth', require('./src/routes/authRoutes'));
+app.use('/api/runtime-ai', require('./src/routes/runtimeAiRoutes'));
 app.use('/api/users', require('./src/routes/userRoutes'));
 app.use('/api/paper-trading', require('./src/routes/paperTradingRoutes'));
 
