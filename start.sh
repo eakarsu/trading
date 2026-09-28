@@ -100,8 +100,6 @@ fi
 for dependency_dir in backend/node_modules frontend/node_modules; do
   [[ -d "$dependency_dir" ]] || { echo "Missing $dependency_dir; install locked dependencies before startup." >&2; exit 1; }
 done
-[[ -d frontend/dist ]] || { echo "Missing frontend/dist; run the production build before startup." >&2; exit 1; }
-
 api_port="${PORT:-${BACKEND_PORT:-3001}}"; ui_port="${FRONTEND_PORT:-3000}"
 api_host="${HOST:-${BACKEND_HOST:-127.0.0.1}}"; ui_host="${FRONTEND_HOST:-127.0.0.1}"
 for port in "$api_port" "$ui_port"; do
@@ -114,6 +112,8 @@ cleanup() {
 }
 trap cleanup EXIT INT TERM
 
+export VITE_API_BASE_URL="http://127.0.0.1:${api_port}"
+npm --prefix frontend run build
 env HOST="$api_host" PORT="$api_port" npm --prefix backend start & api_pid=$!
 npm --prefix frontend run preview -- --host "$ui_host" --port "$ui_port" --strictPort & ui_pid=$!
 while kill -0 "$api_pid" 2>/dev/null && kill -0 "$ui_pid" 2>/dev/null; do sleep 1; done

@@ -26,8 +26,10 @@ export default defineConfig(({ mode }) => {
         'www.stockstrategy.info',
         'localhost',
         '127.0.0.1'
-      ]
+      ],
+      proxy: { '/api': `http://127.0.0.1:${env.BACKEND_PORT || 3001}` }
     },
+    preview: { proxy: { '/api': `http://127.0.0.1:${env.BACKEND_PORT || 3001}` } },
     optimizeDeps: { rolldownOptions: { transform: { jsx: { runtime: 'automatic' } } } }
   }
 })
