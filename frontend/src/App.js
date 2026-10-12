@@ -1,3 +1,4 @@
+import NativeAIReadiness from './pages/NativeAIReadiness';
 import React from 'react';
 import { BrowserRouter as Router, Navigate, Route, Routes } from 'react-router-dom';
 import Layout from './components/Layout';
@@ -19,7 +20,7 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/paper-trading" element={protectedPage(<PaperTradingPage />)} />
-          <Route path="/profile" element={protectedPage(<ProfilePage />)} />
+          <Route path="/profile" element={protectedPage(<ProfilePage />)} /><Route path="/ai-workspace" element={protectedPage(<NativeAIReadiness/>)} />
           <Route path="/dashboard" element={<Navigate to="/paper-trading" replace />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

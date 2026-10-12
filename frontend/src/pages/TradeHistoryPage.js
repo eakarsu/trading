@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { brokersAPI } from '../api/brokers';
+import RecordDialog from '../components/RecordDialog';
 import '../styles/pages/TradeHistoryPage.css';
 
 const TradeHistoryPage = () => {
@@ -9,6 +10,7 @@ const TradeHistoryPage = () => {
   const [isBrokerConnected, setIsBrokerConnected] = useState(false);
   const [activeBroker, setActiveBroker] = useState(null);
   const [error, setError] = useState(null);
+  const [selectedOrder, setSelectedOrder] = useState(null);
 
   // Filter state
   const [filters, setFilters] = useState({
@@ -205,6 +207,21 @@ const TradeHistoryPage = () => {
     return statusMap[status?.toLowerCase()] || 'status-default';
   };
 
+  const handleRowKeyDown = (event, order) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      setSelectedOrder(order);
+    }
+  };
+
+  const updateOrder = (updated) => {
+    setOrders((prev) => prev.map((order) => (order.id === updated.id ? updated : order)));
+  };
+
+  const removeOrder = (record) => {
+    setOrders((prev) => prev.filter((order) => order.id !== record.id));
+  };
+
   // Pagination
   const indexOfLastOrder = currentPage * ordersPerPage;
   const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
@@ -367,7 +384,15 @@ const TradeHistoryPage = () => {
               </thead>
               <tbody>
                 {currentOrders.map((order) => (
-                  <tr key={order.id}>
+                  <tr
+                    key={order.id}
+                    className="order-row"
+                    tabIndex={0}
+                    role="button"
+                    aria-label={`View order ${order.symbol || order.id}`}
+                    onClick={() => setSelectedOrder(order)}
+                    onKeyDown={(event) => handleRowKeyDown(event, order)}
+                  >
                     <td>{formatDate(order.created_at)}</td>
                     <td className="symbol">{order.symbol}</td>
                     <td>
@@ -438,6 +463,17 @@ const TradeHistoryPage = () => {
           </>
         )}
       </div>
+
+      {selectedOrder && (
+        <RecordDialog
+          key={selectedOrder.id}
+          title={`Order ${selectedOrder.symbol || selectedOrder.id || ''}`.trim()}
+          item={selectedOrder}
+          onClose={() => setSelectedOrder(null)}
+          onSave={updateOrder}
+          onDelete={removeOrder}
+        />
+      )}
     </div>
   );
 };

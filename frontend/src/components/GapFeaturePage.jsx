@@ -1,6 +1,7 @@
 // === Batch 11 Gaps & Frontend Mounts ===
 // Generic Gap-feature page for trading
 import { useState } from 'react'
+import JsonReport from './JsonReport'
 
 export default function GapFeaturePage({ title, description, slug, endpoint, fields = [], aiResultKey }) {
   const [form, setForm] = useState(() => Object.fromEntries(fields.map(f => [f.name, f.defaultValue || ''])))
@@ -67,7 +68,7 @@ export default function GapFeaturePage({ title, description, slug, endpoint, fie
             <strong style={{ fontSize: 13 }}>Result</strong>
             <button onClick={copy} style={{ fontSize: 11, background: 'transparent', border: '1px solid #ddd', padding: '2px 8px', borderRadius: 4, cursor: 'pointer' }}>{copied ? 'Copied' : 'Copy'}</button>
           </div>
-          <pre style={{ whiteSpace: 'pre-wrap', fontSize: 12, background: '#f8f9fa', padding: 12, borderRadius: 6, overflow: 'auto' }}>{typeof responseText === 'string' ? responseText : JSON.stringify(result, null, 2)}</pre>
+          <JsonReport data={result} title={title || 'AI result'} />
         </div>
       )}
     </div>

@@ -48,75 +48,19 @@ const MarketDataPage = () => {
   const fetchSavedData = async () => {
     try {
       const response = await marketDataAPI.getUserMarketData();
-      // Flatten the response to create individual items for display
-      const flattenedData = response.reduce((acc, marketDataDoc) => {
-        // Add indices
-        marketDataDoc.indices.forEach(item => {
-          acc.push({
-            id: `${marketDataDoc._id}-index-${item.symbol}`,
-            parentId: marketDataDoc._id,
-            type: 'index',
-            symbol: item.symbol,
-            name: item.name,
-            price: item.price,
-            change: item.change,
-            changePercent: item.changePercent,
-            volume: item.volume,
-            date: marketDataDoc.lastUpdated
-          });
-        });
-        
-        // Add stocks
-        marketDataDoc.stocks.forEach(item => {
-          acc.push({
-            id: `${marketDataDoc._id}-stock-${item.symbol}`,
-            parentId: marketDataDoc._id,
-            type: 'stock',
-            symbol: item.symbol,
-            name: item.name,
-            price: item.price,
-            change: item.change,
-            changePercent: item.changePercent,
-            volume: item.volume,
-            marketCap: item.marketCap,
-            date: marketDataDoc.lastUpdated
-          });
-        });
-        
-        // Add commodities
-        marketDataDoc.commodities.forEach(item => {
-          acc.push({
-            id: `${marketDataDoc._id}-commodity-${item.symbol}`,
-            parentId: marketDataDoc._id,
-            type: 'commodity',
-            symbol: item.symbol,
-            name: item.name,
-            price: item.price,
-            change: item.change,
-            changePercent: item.changePercent,
-            volume: item.volume,
-            date: marketDataDoc.lastUpdated
-          });
-        });
-        
-        // Add currencies
-        marketDataDoc.currencies.forEach(item => {
-          acc.push({
-            id: `${marketDataDoc._id}-currency-${item.symbol}`,
-            parentId: marketDataDoc._id,
-            type: 'currency',
-            symbol: item.symbol,
-            name: item.name,
-            price: item.price,
-            change: item.change,
-            changePercent: item.changePercent,
-            volume: item.volume,
-            date: marketDataDoc.lastUpdated
-          });
-        });
-        
-        return acc;
-      }, []);
+      // /user-data returns flat MarketData rows, not documents with category arrays.
+      const rows = Array.isArray(response) ? response : Array.isArray(response?.data) ? response.data : [];
+      const flattenedData = rows.map(item => ({
+        ...item,
+        parentId: item.id,
+        name: item.name || item.symbol,
+        type: ['SPY', 'QQQ', 'DIA', 'IWM', 'VTI'].includes(item.symbol) ? 'index'
+          : ['GLD', 'SLV', 'OIL', 'GAS', 'GOLD'].includes(item.symbol) ? 'commodity'
+            : ['EURUSD', 'GBPUSD', 'USDJPY', 'USDCAD'].includes(item.symbol) ? 'currency' : 'stock',
+        change: Number(item.change || 0),
+        changePercent: Number(item.changePercent || 0),
+        date: item.lastUpdated || item.timestamp,
+      }));
       
       setSavedData(flattenedData);
     } catch (err) {
@@ -469,7 +413,8 @@ const MarketDataPage = () => {
     if (value === undefined || value === null) {
       return '0.00%';
     }
-    return `${value >= 0 ? '+' : ''}${value.toFixed(2)}%`;
+    const amount = Number(value);
+    return `${amount >= 0 ? '+' : ''}${amount.toFixed(2)}%`;
   };
 
   const formatDate = (dateString) => {

@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import Pagination from '../components/Pagination';
+import RecordDialog from '../components/RecordDialog';
+import JsonReport from '../components/JsonReport';
+import NativeAIControls from '../components/NativeAIControls';
 import { listAIResults, generateTradeRationale } from '../api/aiResults';
 
 /**
@@ -11,11 +14,12 @@ import { listAIResults, generateTradeRationale } from '../api/aiResults';
  */
 export default function TradeJournalPage() {
   const [page, setPage] = useState(1);
-  const [pageSize] = useState(10);
+  const [pageSize] = useState(20);
   const [data, setData] = useState({ data: [], pagination: { totalPages: 1, total: 0 } });
   const [symbol, setSymbol] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [selectedRow, setSelectedRow] = useState(null);
 
   // form state
   const [form, setForm] = useState({
@@ -23,12 +27,24 @@ export default function TradeJournalPage() {
     rsi: '', macd: '', ema10: '', ema20: ''
   });
   const [submitting, setSubmitting] = useState(false);
+  const examples = [
+    { symbol: 'AAPL', side: 'buy', qty: 25, price: 195.50, rsi: 43, macd: 0.32, ema10: 194.8, ema20: 193.6 },
+    { symbol: 'MSFT', side: 'sell', qty: 10, price: 415.30, rsi: 68, macd: -0.24, ema10: 414.2, ema20: 416.1 },
+    { symbol: 'NVDA', side: 'buy', qty: 15, price: 125.75, rsi: 51, macd: 0.11, ema10: 124.9, ema20: 123.8 },
+  ];
+  const presets = examples.map((value, index) => ({
+    name: ['Example buy', 'Example sell', 'Example momentum'][index],
+    fill: () => { setForm(value); return { filled: Object.keys(value).length, manual: [] }; },
+  }));
 
   async function fetchData() {
     setLoading(true); setError(null);
     try {
       const res = await listAIResults({ page, pageSize, feature: 'trade_rationale', symbol: symbol || undefined });
-      setData(res);
+      setData({
+        data: Array.isArray(res?.data) ? res.data : [],
+        pagination: res?.pagination || { totalPages: 1, total: 0 },
+      });
     } catch (e) {
       setError(e?.response?.data?.message || e.message);
     } finally {
@@ -64,6 +80,18 @@ export default function TradeJournalPage() {
     }
   }
 
+  const updateResult = updated => {
+    setData(prev => ({ ...prev, data: prev.data.map(row => (row.id === updated.id ? { ...row, ...updated } : row)) }));
+  };
+
+  const removeResult = record => {
+    setData(prev => ({
+      ...prev,
+      data: prev.data.filter(row => row.id !== record.id),
+      pagination: prev.pagination ? { ...prev.pagination, total: Math.max(0, (prev.pagination.total || 0) - 1) } : prev.pagination,
+    }));
+  };
+
   return (
     <div className="trade-journal-page" style={{ padding: '1rem' }}>
       <h1>Trade Journal</h1>
@@ -86,6 +114,7 @@ export default function TradeJournalPage() {
 
       <details style={{ marginBottom: '1rem' }}>
         <summary>+ Generate rationale for a new trade</summary>
+        <NativeAIControls presets={presets} context="trade rationale">
         <form onSubmit={submit} style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.5rem', marginTop: '0.5rem' }}>
           <input placeholder="Symbol" value={form.symbol} onChange={e => setForm({ ...form, symbol: e.target.value })} required />
           <select value={form.side} onChange={e => setForm({ ...form, side: e.target.value })}>
@@ -102,6 +131,7 @@ export default function TradeJournalPage() {
             {submitting ? 'Generating…' : 'Generate rationale'}
           </button>
         </form>
+        </NativeAIControls>
       </details>
 
       <table style={{ width: '100%', borderCollapse: 'collapse' }}>
@@ -122,7 +152,16 @@ export default function TradeJournalPage() {
             const r = row.ai_results || {};
             const trade = r.trade || {};
             return (
-              <tr key={row.id} style={{ borderTop: '1px solid #eee' }}>
+              <tr
+                key={row.id}
+                className="record-row"
+                tabIndex={0}
+                role="button"
+                aria-label={`View trade rationale for ${row.symbol}`}
+                onClick={() => setSelectedRow(row)}
+                onKeyDown={event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); setSelectedRow(row); } }}
+                style={{ borderTop: '1px solid #eee', cursor: 'pointer' }}
+              >
                 <td style={{ padding: '0.5rem' }}>{new Date(row.createdAt).toLocaleString()}</td>
                 <td style={{ padding: '0.5rem' }}>{row.symbol}</td>
                 <td style={{ padding: '0.5rem' }}>{trade.side || '-'}</td>
@@ -142,6 +181,20 @@ export default function TradeJournalPage() {
           onPageChange={setPage}
         />
       </div>
+
+      {selectedRow && (
+        <RecordDialog
+          key={selectedRow.id}
+          title={`Trade rationale · ${selectedRow.symbol || ''}`.trim()}
+          item={selectedRow}
+          fields={['id', 'symbol', 'feature', 'model', 'createdAt']}
+          onClose={() => setSelectedRow(null)}
+          onSave={updateResult}
+          onDelete={removeResult}
+        >
+          <JsonReport data={selectedRow.ai_results} title="AI trade rationale" model={selectedRow.ai_results?.model || selectedRow.model} />
+        </RecordDialog>
+      )}
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import paperTradingAPI from '../api/paperTrading';
+import RecordDialog from '../components/RecordDialog';
 import '../styles/pages/PaperTradingPage.css';
 
 const newClientOrderId = () => window.crypto?.randomUUID?.() || `paper-${Date.now()}`;
@@ -9,6 +10,8 @@ const decimal = value => Number(value || 0).toLocaleString(undefined, { maximumF
 const PaperTradingPage = () => {
   const [account, setAccount] = useState(null);
   const [orders, setOrders] = useState([]);
+  const [selectedPosition, setSelectedPosition] = useState(null);
+  const [selectedOrder, setSelectedOrder] = useState(null);
   const [form, setForm] = useState({ clientOrderId: newClientOrderId(), symbol: '', side: 'BUY', orderType: 'MARKET', quantity: '', limitPrice: '' });
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState(null);
@@ -61,6 +64,22 @@ const PaperTradingPage = () => {
     } catch (error) {
       setMessage({ type: 'error', text: error.response?.data?.message || 'Could not activate the kill switch.' });
     } finally { setBusy(false); }
+  };
+
+  const updateOrder = updated => {
+    setOrders(prev => prev.map(order => (order.id === updated.id ? { ...order, ...updated } : order)));
+  };
+
+  const removeOrder = record => {
+    setOrders(prev => prev.filter(order => order.id !== record.id));
+  };
+
+  const updatePosition = updated => {
+    setAccount(prev => prev ? { ...prev, positions: (prev.positions || []).map(position => (position.id === updated.id ? { ...position, ...updated } : position)) } : prev);
+  };
+
+  const removePosition = record => {
+    setAccount(prev => prev ? { ...prev, positions: (prev.positions || []).filter(position => position.id !== record.id) } : prev);
   };
 
   const exportAudit = async () => {
@@ -118,7 +137,7 @@ const PaperTradingPage = () => {
           <h2>Positions</h2>
           {!account?.positions?.length ? <p className="paper-empty">No paper positions.</p> : (
             <div className="paper-table-wrap"><table><thead><tr><th>Symbol</th><th>Quantity</th><th>Avg cost</th><th>Mark</th><th>Value</th></tr></thead><tbody>
-              {account.positions.map(position => <tr key={position.id}><td>{position.symbol}</td><td>{decimal(position.quantity)}</td><td>{currency(position.averageCost)}</td><td>{currency(position.markPrice)}</td><td>{currency(position.marketValue)}</td></tr>)}
+              {account.positions.map(position => <tr key={position.id} className="record-row" tabIndex={0} role="button" aria-label={`View ${position.symbol} position`} onClick={() => setSelectedPosition(position)} onKeyDown={event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); setSelectedPosition(position); } }}><td>{position.symbol}</td><td>{decimal(position.quantity)}</td><td>{currency(position.averageCost)}</td><td>{currency(position.markPrice)}</td><td>{currency(position.marketValue)}</td></tr>)}
             </tbody></table></div>
           )}
         </section>
@@ -128,10 +147,32 @@ const PaperTradingPage = () => {
         <div className="paper-section-title"><h2>Order and fill record</h2><button className="btn btn-secondary" onClick={refresh} disabled={busy}>Refresh</button></div>
         {!orders.length ? <p className="paper-empty">No paper orders yet. An administrator must ingest an approved market snapshot before the first order.</p> : (
           <div className="paper-table-wrap"><table><thead><tr><th>Time</th><th>Order ID</th><th>Symbol</th><th>Side</th><th>Requested</th><th>Filled</th><th>Avg fill</th><th>Status</th><th>Risk</th></tr></thead><tbody>
-            {orders.map(order => <tr key={order.id}><td>{new Date(order.createdAt).toLocaleString()}</td><td title={order.id}>{order.clientOrderId}</td><td>{order.symbol}</td><td>{order.side}</td><td>{decimal(order.quantity)}</td><td>{decimal(order.filledQuantity)}</td><td>{order.averageFillPrice ? currency(order.averageFillPrice) : '—'}</td><td><span className={`paper-status ${order.status.toLowerCase()}`}>{order.status}</span></td><td>{order.rejectionCode || order.riskDecision?.policy || '—'}</td></tr>)}
+            {orders.map(order => <tr key={order.id} className="record-row" tabIndex={0} role="button" aria-label={`View order ${order.symbol}`} onClick={() => setSelectedOrder(order)} onKeyDown={event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); setSelectedOrder(order); } }}><td>{new Date(order.createdAt).toLocaleString()}</td><td title={order.id}>{order.clientOrderId}</td><td>{order.symbol}</td><td>{order.side}</td><td>{decimal(order.quantity)}</td><td>{decimal(order.filledQuantity)}</td><td>{order.averageFillPrice ? currency(order.averageFillPrice) : '—'}</td><td><span className={`paper-status ${order.status.toLowerCase()}`}>{order.status}</span></td><td>{order.rejectionCode || order.riskDecision?.policy || '—'}</td></tr>)}
           </tbody></table></div>
         )}
       </section>
+
+      {selectedPosition && (
+        <RecordDialog
+          key={`position-${selectedPosition.id}`}
+          title={`${selectedPosition.symbol || 'Position'} position`}
+          item={selectedPosition}
+          onClose={() => setSelectedPosition(null)}
+          onSave={updatePosition}
+          onDelete={removePosition}
+        />
+      )}
+
+      {selectedOrder && (
+        <RecordDialog
+          key={`order-${selectedOrder.id}`}
+          title={`Paper order ${selectedOrder.symbol || selectedOrder.id || ''}`.trim()}
+          item={selectedOrder}
+          onClose={() => setSelectedOrder(null)}
+          onSave={updateOrder}
+          onDelete={removeOrder}
+        />
+      )}
     </div>
   );
 };

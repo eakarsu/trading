@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import JsonReport from '../components/JsonReport';
+import NativeAIControls from '../components/NativeAIControls';
 import {
   aiSentimentAnalyzer,
   aiRiskCalculator,
@@ -113,10 +115,7 @@ function ResultBox({ result, error }) {
   if (!result) return null;
   return (
     <div style={styles.result}>
-      <div style={{ fontWeight: 700, marginBottom: 8 }}>Result</div>
-      <pre style={styles.pre}>
-        {typeof result === 'string' ? result : JSON.stringify(result, null, 2)}
-      </pre>
+      <JsonReport data={result} title="AI result" />
     </div>
   );
 }
@@ -604,14 +603,15 @@ export default function AIRiskToolsPage() {
       </div>
 
       <div style={styles.card}>
+        {activeTab === 'paper' ? <PaperTradingForm /> : <NativeAIControls context={`${activeTab} analysis`}>
         {activeTab === 'sentiment' && <SentimentForm />}
         {activeTab === 'risk' && <RiskCalculatorForm />}
         {activeTab === 'correlation' && <CorrelationForm />}
         {activeTab === 'alert' && <AlertOptimizerForm />}
         {activeTab === 'tax' && <TaxLossHarvestForm />}
         {activeTab === 'options' && <OptionsGreeksForm />}
-        {activeTab === 'paper' && <PaperTradingForm />}
         {activeTab === 'copy' && <CopyTradingForm />}
+        </NativeAIControls>}
         <div style={styles.disclaimer}>
           Disclaimer: AI output is for research purposes only and is not investment advice.
         </div>

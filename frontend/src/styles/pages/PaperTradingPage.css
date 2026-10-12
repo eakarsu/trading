@@ -34,3 +34,5 @@
 .paper-status.partially_filled, .paper-status.open { color: var(--warning-light); background: var(--warning-bg); }
 @media (max-width: 1200px) { .paper-metrics { grid-template-columns: repeat(3, 1fr); } .paper-grid { grid-template-columns: 1fr; } }
 @media (max-width: 720px) { .paper-page { padding: var(--space-3); } .paper-header { flex-direction: column; } .paper-actions { width: 100%; flex-wrap: wrap; } .paper-metrics { grid-template-columns: repeat(2, 1fr); } .paper-form { grid-template-columns: 1fr; } .paper-form .paper-id { grid-column: auto; } }
+.paper-table-wrap tbody tr.record-row { cursor: pointer; }
+.paper-table-wrap tbody tr.record-row:hover, .paper-table-wrap tbody tr.record-row:focus-visible { background: rgba(255, 255, 255, .04); outline: none; }

@@ -3,6 +3,18 @@ const { randomUUID } = require('crypto');
 const { protect } = require('../middleware/authMiddleware');
 const { sequelize } = require('../config/database');
 
+// Only expose the current user's receipts; a receipt is a saved AI response.
+router.get('/receipts', protect, async (req, res, next) => {
+  try {
+    const [rows] = await sequelize.query(
+      `SELECT id, model, content, "createdAt" FROM ai_provider_receipts
+       WHERE "userId" = :userId ORDER BY "createdAt" DESC LIMIT 20`,
+      { replacements: { userId: req.user.id } },
+    );
+    res.json({ data: rows });
+  } catch (error) { next(error); }
+});
+
 router.post('/recommendation', protect, async (req, res, next) => {
   try {
     const prompt = typeof req.body?.prompt === 'string' ? req.body.prompt.trim() : '';

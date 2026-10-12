@@ -8,7 +8,7 @@ const Layout = ({ children }) => {
     <div className="layout">
       <Header />
       <div className="main-container">
-        <Navigation />
+        <Navigation /><a href="/ai-workspace">AI workspace</a>
         <main className="content">
           {children}
         </main>

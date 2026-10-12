@@ -433,3 +433,14 @@
     align-items: flex-start;
   }
 }
+
+.orders-table tbody tr.order-row {
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.orders-table tbody tr.order-row:hover,
+.orders-table tbody tr.order-row:focus-visible {
+  background-color: rgba(255, 255, 255, 0.04);
+  outline: none;
+}
