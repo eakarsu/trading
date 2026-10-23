@@ -14,7 +14,7 @@ const { initializeDatabase } = require('./src/models');
 const allowedOrigins = list('CORS_ORIGINS', 'http://localhost:3000,http://localhost:5173');
 const corsOptions = {
   origin(origin, callback) {
-    if (!origin || allowedOrigins.includes(origin) || (process.env.NODE_ENV !== 'production' && allowedOrigins.includes('*'))) {
+    if (!origin || allowedOrigins.includes(origin)) {
       return callback(null, true);
     }
     return callback(Object.assign(new Error('Origin is not allowed by CORS policy'), { status: 403, code: 'CORS_DENIED' }));
@@ -59,6 +59,7 @@ app.get('/ready', async (req, res) => {
   }
 });
 
+app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
 app.use('/api/health', require('./src/routes/healthRoutes'));
 app.use('/api/auth', require('./src/routes/authRoutes'));
 app.use('/api/runtime-ai', require('./src/routes/runtimeAiRoutes'));

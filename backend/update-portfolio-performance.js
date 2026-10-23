@@ -5,7 +5,7 @@ require('dotenv').config();
 const sequelize = new Sequelize(
   process.env.DB_NAME || 'ai_trading_platform',
   process.env.DB_USER || 'postgres',
-  process.env.DB_PASSWORD || 'password',
+  (process.env.DB_PASSWORD || (() => { throw new Error('DB_PASSWORD is required'); })()),
   {
     host: process.env.DB_HOST || 'localhost',
     port: process.env.DB_PORT || 5432,
